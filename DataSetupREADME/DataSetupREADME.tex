@@ -1,0 +1,125 @@
+
+\documentclass[10pt]{amsart}
+\usepackage[left=.75in,right=.75in,top=.75in,bottom=.75in]{geometry}
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{color,graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+%\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\newcommand{\eqn}[1]{(\ref{#1})}
+\newcommand{\numberpatients}{{33  }}
+\newcommand{\numberCTImages}{{264 }}
+
+\newcommand{\enhancingvolumechangemanual}{{-0.2\% }}
+\newcommand{\enhancingvolumechangerf}{{-3\% }}
+\newcommand{\enhancingvolumechangedosecorrelationmanual}{{-.24 }}
+\newcommand{\enhancingvolumechangedosecorrelationrf}{{-.41 }}
+\newcommand{\enhancingvolumechangettpcorrelationmanual}{{-.24}}
+\newcommand{\enhancingvolumechangettpcorrelationrf}{{-.41}}
+
+\newcommand{\necrosisvolumechangemanual}{{-0.2\% }}
+\newcommand{\necrosisvolumechangerf}{{-3\% }}
+\newcommand{\necrosisvolumechangedosecorrelationmanual}{{-.57 }}
+\newcommand{\necrosisvolumechangedosecorrelationrf}{{-.40 }}
+\newcommand{\necrosisvolumechangettpcorrelationmanual}{{0.67 }}
+\newcommand{\necrosisvolumechangettpcorrelationrf}{{0.77 }}
+
+\newcommand{\DSCNecrosisPredictionError}{{.85 }}
+\newcommand{\DSCEnhancingPredictionError}{{.61 }}
+%\renewcommand{\labelenumi}{\arabic{enumi}. }
+
+%http://latex2rtf.sourceforge.net/latex2rtf_1_9_19.html#Conditional-Parsing
+%Starting with LaTeX2RTF 1.9.18, there is a handy method for
+%controlling which content should be processed by LaTeX or by
+%LaTeX2RTF . Control is achieved using the standard \if facility of
+%TeX. If you include the following line in the preamble of your document 
+%
+%     \newif\iflatextortf
+%Then you will create a new \iflatextortf command in LaTeX . TeX
+%sets the value of this to false by default. Now, LaTeX2RTF
+%internally sets \iflatextortf to be true, and to ensure that this
+%is always the case, LaTeX2RTF ignores the command
+%\latextortffalse. This means that you can control how different
+%applications process your document by
+%
+%     \iflatextortf
+%     This code is processed only by latex2rtf
+%     \else
+%     This code is processed only by latex
+%     \fi
+%Note that \iflatextortf will only work within a section; you
+%cannot use this command to conditionally parse code that crosses
+%section boundaries. Also, it will only work on complete table or
+%figure environments. Due to the mechanism used by LaTeX2RTF in
+%processing these environments, at this time the only way to
+%conditionally parse tables and figures is to include two complete
+%versions of the environment in question, nested within an
+%appropriate \iflatextortf structure.
+%
+\newif\iflatextortf
+
+\iflatextortf 
+%do nothing
+\else  %pdflatex
+\usepackage{boxedminipage,float}
+\usepackage{wrapfig,setspace}
+\usepackage[pdftex, plainpages=false, colorlinks=true, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black]{hyperref}
+
+\newcommand{\picdir}{./pdffig}
+\fi
+
+\title[Volumetric RECIST Assessment of HCC Response via RF-based Automated Segmentation]{Volumetric RECIST Assessment of Hepatocellular Carcinoma Response 
+%to Sorafenib 
+via Random Forest based Automated Segmentation 
+%Protocol (Are feature images predictive of treatment response)
+}
+
+\author{K.~Ahmed\textsuperscript{1} \and
+        D.~Fuentes\textsuperscript{1} \and
+        J.S.~Lin\textsuperscript{1} \and
+        R.~Ali\textsuperscript{3} \and
+        A.~Kaseb\textsuperscript{3} \and
+        W.~Wei\textsuperscript{4} \and
+        J.D.~Hazle\textsuperscript{1} \and
+        A.~Qayyum\textsuperscript{2} \and
+        K.~Elsayes\textsuperscript{2} 
+}
+
+\date{ \small
+The University of Texas M.D. Anderson Cancer Center,\\
+Departments of \textsuperscript{1}Imaging Physics, \textsuperscript{2}Diagnostic Radiology,
+\textsuperscript{3}Gastrointenstinal Oncology,
+and \textsuperscript{4}Biostatistics, Houston TX 77030, USA \\
+%Email: \texttt{jhazle@mdanderson.org}   \\
+Received: date / Accepted: date
+% Webpage: \texttt{http://wiki.ices.utexas.edu/dddas}
+}
+
+
+
+\begin{document}
+ An example image set from a single study is shown in Figure~\ref{Fig:OriginalImages}.
+
+\begin{figure}[h] 
+\iflatextortf 
+%do nothing
+\else
+\begin{tabular}{ccccc} 
+& \scalebox{0.45}{\includegraphics*{\picdir/precontrast.png}}
+& \scalebox{0.45}{\includegraphics*{\picdir/arterial.png}   }
+& \scalebox{0.45}{\includegraphics*{\picdir/venous.png}     }
+& \scalebox{0.45}{\includegraphics*{\picdir/delay.png}      }
+\\
+& pre-contrast & arterial & porto-venous & delayed 
+\\ 
+\end{tabular}           
+\fi
+\caption{Original Images. Each study consists of volumetric images from the
+pre-contrast, arterial, porto-venous, delayed phase shown. 
+}\label{Fig:OriginalImages}
+\end{figure}  
+
+
+\end{document}
