@@ -253,6 +253,7 @@ if [[ ! -f ${MASK_IMAGE} ]];
     echo "The specified mask image \"${MASK_IMAGE}\" does not exist."
     exit 1
   fi
+#TODO
 echo python /workarea/fuentes/github/RandomForestHCCResponse/Code/slicecentroid.py --imagefile=${MASK_IMAGE}
 CENTROIDSLICE=`python /workarea/fuentes/github/RandomForestHCCResponse/Code/slicecentroid.py --imagefile=${MASK_IMAGE}`
 echo centroid $CENTROIDSLICE

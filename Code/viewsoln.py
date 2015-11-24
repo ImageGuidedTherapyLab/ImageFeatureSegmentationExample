@@ -57,9 +57,9 @@ if (options.rfimagefile != None and options.maskimage != None):
   pngcmd = 'c3d %s -slice z %d  -dup -oli %s 1.0 -type uchar -omc %s' % (options.rfimagefile,zloc,options.labelfile,rfsolnpng)
   print pngcmd
   os.system(pngcmd)
-  pngcmd = 'c3d %s %s -scale -1 -add -binarize -scale 7 -slice z %d  -dup -oli %s 1.0 -type uchar -omc %s' % (truthimage,options.rfimagefile,zloc,options.labelfile,diffsolnpng)
-  print pngcmd
-  os.system(pngcmd)
+  #pngcmd = 'c3d %s %s -scale -1 -add -binarize -scale 7 -slice z %d  -dup -oli %s 1.0 -type uchar -omc %s' % (truthimage,options.rfimagefile,zloc,options.labelfile,diffsolnpng)
+  #print pngcmd
+  #os.system(pngcmd)
 else:
   parser.print_help()
   print options
