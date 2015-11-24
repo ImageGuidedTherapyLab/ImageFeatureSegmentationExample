@@ -100,19 +100,23 @@ Received: date / Accepted: date
 
 
 \begin{document}
- An example image set from a single study is shown in Figure~\ref{Fig:OriginalImages}.
+ An example image set from a single study needed as input to the random
+forest models is shown in Figure~\ref{Fig:OriginalImages}.
 
 \begin{figure}[h] 
 \iflatextortf 
 %do nothing
 \else
 \begin{tabular}{ccccc} 
-& \scalebox{0.45}{\includegraphics*{\picdir/precontrast.png}}
-& \scalebox{0.45}{\includegraphics*{\picdir/arterial.png}   }
-& \scalebox{0.45}{\includegraphics*{\picdir/venous.png}     }
-& \scalebox{0.45}{\includegraphics*{\picdir/delay.png}      }
+  \scalebox{0.40}{\includegraphics*{\picdir/mask.png}}
+& \scalebox{0.40}{\includegraphics*{\picdir/precontrast.png}}
+& \scalebox{0.40}{\includegraphics*{\picdir/arterial.png}   }
+& \scalebox{0.40}{\includegraphics*{\picdir/venous.png}     }
+& \scalebox{0.40}{\includegraphics*{\picdir/delay.png}      }
 \\
-& pre-contrast & arterial & porto-venous & delayed 
+mask & pre-contrast & arterial & porto-venous & delayed 
+\\
+Mask.nii.gz & Pre.nii.gz &  Art.nii.gz & Ven.nii.gz & Del.nii.gz  
 \\ 
 \end{tabular}           
 \fi
@@ -120,6 +124,13 @@ Received: date / Accepted: date
 pre-contrast, arterial, porto-venous, delayed phase shown. 
 }\label{Fig:OriginalImages}
 \end{figure}  
+
+Each image set should be in a separate directory and should follow
+the below naming convention \textit{exactly}:
+\begin{verbatim}
+$ ls ImageDatabase/Predict0001/before/
+Art.nii.gz  Del.nii.gz  Mask.nii.gz  Pre.nii.gz  Ven.nii.gz
+\end{verbatim}
 
 
 \end{document}
