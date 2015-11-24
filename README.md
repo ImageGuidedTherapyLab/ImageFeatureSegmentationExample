@@ -10,5 +10,6 @@ make -f prediction.makefile volume
 make -f prediction.makefile png
 
 
-Mask.nii.gz  | Pre.nii.gz | Art.nii.gz  | Ven.nii.gz Del.nii.gz  
-![](/DataSetupREADME/pdffig/mask.png) | ![](/DataSetupREADME/pdffig/pre.png) | ![](/DataSetupREADME/pdffig/arterial.png) | ![](/DataSetupREADME/pdffig/venous.png) | ![](/DataSetupREADME/pdffig/delay.png)
+Mask.nii.gz  | Pre.nii.gz  | Art.nii.gz  | Ven.nii.gz | Del.nii.gz  
+-----------  | ----------- | ----------  | ---------- | ----------
+![mask](/DataSetupREADME/pdffig/mask.png) | ![pre](/DataSetupREADME/pdffig/pre.png) | ![art](/DataSetupREADME/pdffig/arterial.png) | ![ven](/DataSetupREADME/pdffig/venous.png) | ![del](/DataSetupREADME/pdffig/delay.png)
