@@ -20,7 +20,9 @@ $ ls ImageDatabase/Predict0001/before/
 Art.nii.gz  Del.nii.gz  Mask.nii.gz  Pre.nii.gz  Ven.nii.gz
 ```
 
-### Example Output
+### Example Segmentation
+Output images are organized with respect to the model used for the
+segmentation $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.gz
 
 RF Output   | Mask.nii.gz  | Pre.nii.gz  | Art.nii.gz  | Ven.nii.gz | Del.nii.gz  
 ----------- | -----------  | ----------- | ----------  | ---------- | ----------
@@ -2505,4 +2507,18 @@ END   <<<<<<<<<<<<<<<<<<<<
  0h 55m 12s
 --------------------------------------------------------------------------------------
 cd /workarea/fuentes/github/LiverSegmentationExample/workdir/Predict0001/before/FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel; /opt/apps/ANTsR/dev//ANTsR_src/ANTsR/src/ANTS/ANTS-build//bin//ImageMath 3 LABELS.GMM.nii.gz MostLikely 0 RF_POSTERIORS*.nii.gz  
+```
+
+### Example Volume Calculation
+
+Given the segmented images, c3d is used to extract volume information. 
+```
+innovador$ make -f prediction.makefile volume
+cd /workarea/fuentes/github/LiverSegmentationExample/workdir/Predict0001/before/FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel; c3d LABELS.GMM.nii.gz LABELS.GMM.nii.gz -lstat > LABELS.GMM.VolStat.txt ; sed "s/\s\+/,/g" LABELS.GMM.VolStat.txt > LABELS.GMM.VolStat.csv
+innovador$ cat /workarea/fuentes/github/LiverSegmentationExample/workdir/Predict0001/before/FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel/LABELS.GMM.VolStat.csv
+LabelID,Mean,StdD,Max,Min,Count,Vol(mm^3),Extent(Vox)
+,0,0.00000,0.00000,0.00000,0.00000,22587824,24901854.558,512,512,93
+,1,1.00000,0.00000,1.00000,1.00000,1119734,1234446.187,270,299,71
+,2,2.00000,0.00000,2.00000,2.00000,609718,672181.125,243,280,69
+,3,3.00000,0.00000,3.00000,3.00000,62116,68479.531,144,176,40
 ```
