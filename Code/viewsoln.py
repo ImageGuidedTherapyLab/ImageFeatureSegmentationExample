@@ -22,7 +22,7 @@ parser.add_option( "--labelfile",
 if (options.rfimagefile != None and options.maskimage != None):
   maskimage    = options.maskimage  
   truthimage   = options.truthimage 
-  rfsolnpng    = options.rfimagefile.replace('.nii.gz','.png')
+  rfsolnpng    = options.rfimagefile.split('/').pop(-1).replace('.nii.gz','.png')
   diffsolnpng  = options.rfimagefile.replace('.nii.gz','.diff.png')
   if ( truthimage != None  ): # check training set available
    if (  os.path.isfile(truthimage) ): # check training set available
@@ -52,9 +52,9 @@ if (options.rfimagefile != None and options.maskimage != None):
     centroid = eval( rawcentroidinfo.replace('CENTROID_VOX',''))
   #print centroid , int(centroid [2])
   zloc =  int(centroid [2])
-  #pngcmd = 'c3d %s -slice z %d  -clip 0 200 -pad 1x0x0vox 0x0x0vox 200 -color-map grey -type uchar -omc %s' % (options.rfimagefile,zloc,options.truthimage)
-  #if 'Truth' in  options.rfimagefile or 'Mask' in  options.rfimagefile:
-  pngcmd = 'c3d %s -slice z %d  -dup -oli %s 1.0 -type uchar -omc %s' % (options.rfimagefile,zloc,options.labelfile,rfsolnpng)
+  pngcmd = 'c3d %s -slice z %d  -clip 0 200 -pad 1x0x0vox 0x0x0vox 200 -color-map grey -type uchar -omc %s' % (options.rfimagefile,zloc,rfsolnpng)
+  if 'LABELS' in  options.rfimagefile or'Truth' in  options.rfimagefile or 'Mask' in  options.rfimagefile:
+    pngcmd = 'c3d %s -slice z %d  -dup -oli %s 1.0 -type uchar -omc %s' % (options.rfimagefile,zloc,options.labelfile,rfsolnpng)
   print pngcmd
   os.system(pngcmd)
   #pngcmd = 'c3d %s %s -scale -1 -add -binarize -scale 7 -slice z %d  -dup -oli %s 1.0 -type uchar -omc %s' % (truthimage,options.rfimagefile,zloc,options.labelfile,diffsolnpng)

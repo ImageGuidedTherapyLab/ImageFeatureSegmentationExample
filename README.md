@@ -21,6 +21,11 @@ Art.nii.gz  Del.nii.gz  Mask.nii.gz  Pre.nii.gz  Ven.nii.gz
 ```
 
 ### Example Output
+
+RF Output   | Mask.nii.gz  | Pre.nii.gz  | Art.nii.gz  | Ven.nii.gz | Del.nii.gz  
+----------- | -----------  | ----------- | ----------  | ---------- | ----------
+![rf](/DataSetupREADME/pdffig/LABELS.GMM.png) | ![mask](/DataSetupREADME/pdffig/Mask.png) | ![pre](/DataSetupREADME/pdffig/Pre.png) | ![art](/DataSetupREADME/pdffig/Art.png) | ![ven](/DataSetupREADME/pdffig/Ven.png) | ![del](/DataSetupREADME/pdffig/Del.png)
+
 ```
 innovador$ make -f prediction.makefile segmentation
 export SCRIPTSPATH=/workarea/fuentes/github/LiverSegmentationExample/Code; mkdir -p /workarea/fuentes/github/LiverSegmentationExample/workdir/Predict0001/before/FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel;  cd /workarea/fuentes/github/LiverSegmentationExample/workdir/Predict0001/before; /workarea/fuentes/github/LiverSegmentationExample/Code/applyTumorSegmentationModel.sh  -d 3 -x /workarea/fuentes/github/LiverSegmentationExample/ImageDatabase/Predict0001/before/Mask.nii.gz         -l 1 -n Pre -a /workarea/fuentes/github/LiverSegmentationExample/ImageDatabase/Predict0001/before/Pre.nii.gz  -n Art -a /workarea/fuentes/github/LiverSegmentationExample/ImageDatabase/Predict0001/before/Art.nii.gz  -n Ven -a /workarea/fuentes/github/LiverSegmentationExample/ImageDatabase/Predict0001/before/Ven.nii.gz -n Del -a /workarea/fuentes/github/LiverSegmentationExample/ImageDatabase/Predict0001/before/Del.nii.gz  -r 1 -r 3 -r 5 -s 2 -b 3  -o /workarea/fuentes/github/LiverSegmentationExample/workdir/Predict0001/before/texture -k /workarea/fuentes/github/LiverSegmentationExample/workdir/Predict0001/before/FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel/ -m /workarea/fuentes/github/LiverSegmentationExample/workdir/FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel  
