@@ -29,3 +29,23 @@ $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.png: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.g
 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Del.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Mask.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=./LABELS.GMM.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
+
+
+#run mixture model to segment the image
+#https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
+#https://www.gnu.org/software/make/manual/html_node/Secondary-Expansion.html#Secondary-Expansion
+.SECONDEXPANSION:
+
+# run tri-phasic image features
+$(WORKDIR)/%.tri.nii.gz: $(DATADIR)/%.nii $(WORKDIR)/$$(*D)/mask.nii.gz
+	./applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^) -l 1 -n anat -a $<  -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$(*D)/texture
+	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  cd $(WORKDIR)/$*; $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(DATADIR)/$*/Mask.nii.gz         -l 1   -n Art -a $(DATADIR)/$*/Art.nii.gz  -n Ven -a $(DATADIR)/$*/Ven.nii.gz -n Del -a $(DATADIR)/$*/Del.nii.gz  -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$*/texture -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  
+	echo $@
+
+
+# run pre-contrast AND tri-phasic image features
+$(WORKDIR)/%.pretri.nii.gz: $(DATADIR)/%.nii $(WORKDIR)/$$(*D)/mask.nii.gz
+	./applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^) -l 1 -n anat -a $<  -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$(*D)/texture
+	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  cd $(WORKDIR)/$*; $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(DATADIR)/$*/Mask.nii.gz         -l 1 -n Pre -a $(DATADIR)/$*/Pre.nii.gz  -n Art -a $(DATADIR)/$*/Art.nii.gz  -n Ven -a $(DATADIR)/$*/Ven.nii.gz -n Del -a $(DATADIR)/$*/Del.nii.gz  -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$*/texture -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  
+	echo $@
+

@@ -2,6 +2,8 @@
 
 ### Usage
 
+* while [ 1 ] ; do make -f makefile -i -k ; make -f makefile tex ;sleep 5 ; done
+
 * make -f prediction.makefile segmentation
 * make -f prediction.makefile volume
 * make -f prediction.makefile png
