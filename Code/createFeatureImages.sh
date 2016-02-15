@@ -142,6 +142,7 @@ MASK_IMAGE=""
 RADII=()
 SMOOTHING_SIGMA=0
 CORE_LABEL=5
+CENTROIDSLICE=1
 
 ################################################################################
 #
@@ -153,7 +154,7 @@ if [[ $# -lt 3 ]] ; then
   Usage >&2
   exit 1
 else
-  while getopts "a:b:c:d:f:g:h:l:n:o:p:r:s:t:u:x:" OPT
+  while getopts "a:b:c:d:e:f:g:h:l:n:o:p:r:s:t:u:x:" OPT
     do
       case $OPT in
           a) #anatomical image
@@ -172,6 +173,9 @@ else
            echo " Error:  ImageDimension must be 2, 3, or 4 "
            exit 1
          fi
+       ;;
+          e)
+       CENTROIDSLICE=$OPTARG
        ;;
           f)
        DIFFERENCE_PAIRS[${#DIFFERENCE_PAIRS[@]}]=$OPTARG
@@ -253,9 +257,6 @@ if [[ ! -f ${MASK_IMAGE} ]];
     echo "The specified mask image \"${MASK_IMAGE}\" does not exist."
     exit 1
   fi
-#TODO
-echo python /workarea/fuentes/github/RandomForestHCCResponse/Code/slicecentroid.py --imagefile=${MASK_IMAGE}
-CENTROIDSLICE=`python /workarea/fuentes/github/RandomForestHCCResponse/Code/slicecentroid.py --imagefile=${MASK_IMAGE}`
 echo centroid $CENTROIDSLICE
 
 OUTPUT_IMAGE=${OUTPUT_PREFIX}MASKERODE.${OUTPUT_SUFFIX}
@@ -272,9 +273,9 @@ if [[ ! -f ${PNG_IMAGE} ]];
   fi
 
 
-if [[ ${#ANATOMICAL_IMAGES[@]} -ne 4 ]];
+if [[ ${#ANATOMICAL_IMAGES[@]} -lt 3 ]];
   then
-      echo "Expecting Images: Pre Art Ven Del "
+      echo "Expecting Images: (Pre) Art Ven Del "
       exit 1
   fi
 #if [[ ${#ANATOMICAL_IMAGES[@]} -ne ${#SYMMETRIC_TEMPLATES[@]} ]];
@@ -374,54 +375,58 @@ for (( i = 0; i < ${#ANATOMICAL_IMAGES[@]}; i++ ))
       fi
   done
 
-
-# multicomponent gmm imagg
-VECTOR_ATROPOS_IMAGE=${OUTPUT_PREFIX}ALL_ATROPOS_GMM.${OUTPUT_SUFFIX}
-VECTOR_ATROPOS_IMAGE_POSTERIORS=${OUTPUT_PREFIX}ALL_ATROPOS_GMM_POSTERIORS%d.${OUTPUT_SUFFIX}
-if [[ ! -f ${VECTOR_ATROPOS_IMAGE} ]];
-   then
-        SEG_BASE="${ANTSPATH}/Atropos -d ${DIMENSION} -a ${NORMALIZED_IMAGES[0]} -a ${NORMALIZED_IMAGES[1]} -a ${NORMALIZED_IMAGES[2]} -a ${NORMALIZED_IMAGES[3]} "
-        SEG_0="-i KMeans[${NUMBER_OF_LABELS},${CLUSTER_CENTERS[i]}] -p Socrates[1] -x $MASK_IMAGE"
-        if [[ ${#CLUSTER_CENTERS[@]} -eq 0 ]];
-          then
-            SEG_0="-i KMeans[${NUMBER_OF_LABELS}] -p Socrates[1] -x $MASK_IMAGE"
-          fi
-        SEG_1="-c [3,0] -k Gaussian -m [0.1,1x1]"
-        if [[ $DIMENSION -eq 3 ]]
-          then
-            SEG_1="-c [3,0] -k Gaussian -m [0.1,1x1x1]"
-          fi
-        SEG_2="-o [${VECTOR_ATROPOS_IMAGE},${VECTOR_ATROPOS_IMAGE_POSTERIORS}]"
-
-        logCmd $SEG_BASE $SEG_0 $SEG_1 $SEG_2
-   fi
-PNG_IMAGE=${OUTPUT_PREFIX}ALL_ATROPOS_GMM.png
-if [[ ! -f ${PNG_IMAGE} ]];
+# expecting tri-phasic + precontrast
+if [[ ${#ANATOMICAL_IMAGES[@]} -eq 4 ]];
   then
-    logCmd c3d ${VECTOR_ATROPOS_IMAGE}   -slice z $CENTROIDSLICE -dup -oli ${LABELFILE} 1.0   -type uchar -omc $PNG_IMAGE
-  fi
-
-# combine all images into multi-component image for PK Modeling
-VECTOR_IMAGE=${OUTPUT_PREFIX}_DENOISE.${OUTPUT_SUFFIX}
-if [[ ! -f ${VECTOR_IMAGE} ]];
-   then
-     logCmd c3d ${NORMALIZED_IMAGES[0]} ${NORMALIZED_IMAGES[1]} ${NORMALIZED_IMAGES[2]} ${NORMALIZED_IMAGES[3]} -omc $VECTOR_IMAGE
-   fi
-# run PK Model
-MODEL_IMAGE=${OUTPUT_PREFIX}DENOISE
-if [[ ! -f ${MODEL_IMAGE}ArtDelDeriv.nii.gz ]];
-   then
-     logCmd ${ANTSPATH}FitCTContrastTransportModel $VECTOR_IMAGE  $MASK_IMAGE $MODEL_IMAGE 
-   fi
-# create png
-PNG_IMAGE=${MODEL_IMAGE}ArtDelDeriv.png
-if [[ ! -f ${PNG_IMAGE} ]];
-  then
-     logCmd c3d ${MODEL_IMAGE}PreArtDeriv.nii.gz    -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc ${MODEL_IMAGE}PreArtDeriv.png
-     logCmd c3d ${MODEL_IMAGE}ArtVenDeriv.nii.gz    -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc ${MODEL_IMAGE}ArtVenDeriv.png
-     logCmd c3d ${MODEL_IMAGE}VenDelDeriv.nii.gz    -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc ${MODEL_IMAGE}VenDelDeriv.png
-     logCmd c3d ${MODEL_IMAGE}AreaUnderCurve.nii.gz -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc ${MODEL_IMAGE}AreaUnderCurve.png
-     logCmd c3d ${MODEL_IMAGE}ArtDelDeriv.nii.gz    -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc $PNG_IMAGE
+      echo "Expecting Images: Pre Art Ven Del "
+      # multicomponent gmm imagg
+      VECTOR_ATROPOS_IMAGE=${OUTPUT_PREFIX}ALL_ATROPOS_GMM.${OUTPUT_SUFFIX}
+      VECTOR_ATROPOS_IMAGE_POSTERIORS=${OUTPUT_PREFIX}ALL_ATROPOS_GMM_POSTERIORS%d.${OUTPUT_SUFFIX}
+      if [[ ! -f ${VECTOR_ATROPOS_IMAGE} ]];
+         then
+              SEG_BASE="${ANTSPATH}/Atropos -d ${DIMENSION} -a ${NORMALIZED_IMAGES[0]} -a ${NORMALIZED_IMAGES[1]} -a ${NORMALIZED_IMAGES[2]} -a ${NORMALIZED_IMAGES[3]} "
+              SEG_0="-i KMeans[${NUMBER_OF_LABELS},${CLUSTER_CENTERS[i]}] -p Socrates[1] -x $MASK_IMAGE"
+              if [[ ${#CLUSTER_CENTERS[@]} -eq 0 ]];
+                then
+                  SEG_0="-i KMeans[${NUMBER_OF_LABELS}] -p Socrates[1] -x $MASK_IMAGE"
+                fi
+              SEG_1="-c [3,0] -k Gaussian -m [0.1,1x1]"
+              if [[ $DIMENSION -eq 3 ]]
+                then
+                  SEG_1="-c [3,0] -k Gaussian -m [0.1,1x1x1]"
+                fi
+              SEG_2="-o [${VECTOR_ATROPOS_IMAGE},${VECTOR_ATROPOS_IMAGE_POSTERIORS}]"
+      
+              logCmd $SEG_BASE $SEG_0 $SEG_1 $SEG_2
+         fi
+      PNG_IMAGE=${OUTPUT_PREFIX}ALL_ATROPOS_GMM.png
+      if [[ ! -f ${PNG_IMAGE} ]];
+        then
+          logCmd c3d ${VECTOR_ATROPOS_IMAGE}   -slice z $CENTROIDSLICE -dup -oli ${LABELFILE} 1.0   -type uchar -omc $PNG_IMAGE
+        fi
+      
+      # combine all images into multi-component image for PK Modeling
+      VECTOR_IMAGE=${OUTPUT_PREFIX}_DENOISE.${OUTPUT_SUFFIX}
+      if [[ ! -f ${VECTOR_IMAGE} ]];
+         then
+           logCmd c3d ${NORMALIZED_IMAGES[0]} ${NORMALIZED_IMAGES[1]} ${NORMALIZED_IMAGES[2]} ${NORMALIZED_IMAGES[3]} -omc $VECTOR_IMAGE
+         fi
+      # run PK Model
+      MODEL_IMAGE=${OUTPUT_PREFIX}DENOISE
+      if [[ ! -f ${MODEL_IMAGE}ArtDelDeriv.nii.gz ]];
+         then
+           logCmd ${ANTSPATH}FitCTContrastTransportModel $VECTOR_IMAGE  $MASK_IMAGE $MODEL_IMAGE 
+         fi
+      # create png
+      PNG_IMAGE=${MODEL_IMAGE}ArtDelDeriv.png
+      if [[ ! -f ${PNG_IMAGE} ]];
+        then
+           logCmd c3d ${MODEL_IMAGE}PreArtDeriv.nii.gz    -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc ${MODEL_IMAGE}PreArtDeriv.png
+           logCmd c3d ${MODEL_IMAGE}ArtVenDeriv.nii.gz    -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc ${MODEL_IMAGE}ArtVenDeriv.png
+           logCmd c3d ${MODEL_IMAGE}VenDelDeriv.nii.gz    -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc ${MODEL_IMAGE}VenDelDeriv.png
+           logCmd c3d ${MODEL_IMAGE}AreaUnderCurve.nii.gz -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc ${MODEL_IMAGE}AreaUnderCurve.png
+           logCmd c3d ${MODEL_IMAGE}ArtDelDeriv.nii.gz    -slice z $CENTROIDSLICE -clip -inf inf  -color-map grey -type uchar -omc $PNG_IMAGE
+        fi
   fi
 
 

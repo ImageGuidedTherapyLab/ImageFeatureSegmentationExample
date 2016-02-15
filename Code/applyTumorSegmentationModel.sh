@@ -167,7 +167,7 @@ MASK_IMAGE=""
 RADII=()
 SMOOTHING_SIGMA=0
 CORE_LABEL=5
-CORE_LABEL=5
+CENTROIDSLICE=1
 
 ################################################################################
 #
@@ -179,7 +179,7 @@ if [[ $# -lt 3 ]] ; then
   Usage >&2
   exit 1
 else
-  while getopts "a:b:c:d:f:h:k:l:m:n:o:p:r:s:t:x:" OPT
+  while getopts "a:b:c:d:e:f:h:k:l:m:n:o:p:r:s:t:x:" OPT
     do
       case $OPT in
           a) #anatomical image
@@ -198,6 +198,9 @@ else
            echo " Error:  ImageDimension must be 2, 3, or 4 "
            exit 1
          fi
+       ;;
+          e)
+       CENTROIDSLICE=$OPTARG
        ;;
           f)
        DIFFERENCE_PAIRS[${#DIFFERENCE_PAIRS[@]}]=$OPTARG
@@ -332,7 +335,7 @@ echo "Create feature images"
 #
 echo "######################################################################################"
 
-COMMAND_LINE="-d ${DIMENSION} -x ${MASK_IMAGE} -o ${OUTPUT_PREFIX}"
+COMMAND_LINE="-d ${DIMENSION} -x ${MASK_IMAGE} -o ${OUTPUT_PREFIX} -e ${CENTROIDSLICE}"
 for (( i = 0; i < ${#ANATOMICAL_IMAGES[@]}; i++ ))
   do
     COMMAND_LINE="${COMMAND_LINE} -a ${ANATOMICAL_IMAGES[$i]}"
