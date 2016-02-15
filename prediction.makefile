@@ -1,8 +1,8 @@
 ROOTDIR=$(WORK)/github/LiverSegmentationExample
-WORKDIR=$(ROOTDIR)/workdir
-DATADIR=$(ROOTDIR)/ImageDatabase
 SCRIPTSPATH=$(ROOTDIR)/Code
 ATROPOSCMD=$(ANTSPATH)/Atropos
+WORKDIR=workdir
+DATADIR=ImageDatabase
 C3DEXE=c3d
 ANTSREGISTRATIONCMD=$(ANTSPATH)/antsRegistration
 ANTSAPPLYTRANSFORMSCMD=$(ANTSPATH)/antsApplyTransforms
@@ -35,6 +35,7 @@ $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.png: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.g
 
 
 $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz 
+	mkdir -p $(WORKDIR)/$*
 	python Code/slicecentroid.py --imagefile=$< > $@
 
 #run mixture model to segment the image
