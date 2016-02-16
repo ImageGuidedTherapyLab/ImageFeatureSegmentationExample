@@ -12,7 +12,8 @@ RFMODEL=FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.
 
 # new cases automagically added
 SUBDIRS := $(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut -d'/' -f 2-)
-
+ 
+.SECONDARY: $(addsuffix /Mask.centroid.txt,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 trifeature: $(addsuffix /$(RFMODEL)/LABELS.TRIGMM.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 # TODO
 #segmentation: $(addsuffix /$(RFMODEL)/LABELS.GMM.nii.gz,$(addprefix $(WORKDIR)/,$(PREDICTLIST)))
