@@ -69,12 +69,15 @@ FEATURES = RAWIMAGE                                    \
            SKEWNESS_RADIUS_3                           \
            SKEWNESS_RADIUS_5                                 
 
-stats: $(foreach idft,$(FEATURES),      $(addsuffix /texturePre_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
-       $(foreach idft,$(FEATURES),      $(addsuffix /textureArt_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
-       $(foreach idft,$(FEATURES),      $(addsuffix /textureVen_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
-       $(foreach idft,$(FEATURES),      $(addsuffix /textureDel_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
-       $(addsuffix /textureNORMALIZED_DISTANCE.lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+stats: $(foreach idft,$(FEATURES),      $(addsuffix /Pre_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Art_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Ven_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Del_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(addsuffix /NORMALIZED_DISTANCE.lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 
+csv: 
+	counter=0 ; for idfile in  $(WORKDIR)/*/*/*.lstat.csv ; do  if [[ $$counter -eq 0 ]] ;then cat $$idfile; else sed '1d' $$idfile; fi; counter=$$((counter+1)) ;done > DataSummary.csv
+ 
 
 # TODO
 #segmentation: $(addsuffix /$(RFMODEL)/LABELS.GMM.nii.gz,$(addprefix $(WORKDIR)/,$(PREDICTLIST)))
