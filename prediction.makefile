@@ -45,4 +45,5 @@ $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz
 .SECONDEXPANSION:
 $(WORKDIR)/%/$(RFMODEL)/LABELS.TRIGMM.nii.gz: $(WORKDIR)/$(RFMODEL) $(DATADIR)/$$*/Mask.nii.gz $(DATADIR)/$$*/Art.nii.gz $(DATADIR)/$$*/Ven.nii.gz $(DATADIR)/$$*/Del.nii.gz $(WORKDIR)/$$*/Mask.centroid.txt 
 	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^)  -l 1  -n Art -a $(word 3,$^)  -n Ven -a $(word 4,$^) -n Del -a $(word 5,$^) -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$*/texture -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  -e `cat $(word 6,$^)`
+	$(ANTSIMAGEMATHCMD) 3 $@ MostLikely 0 $(WORKDIR)/$*/$(RFMODEL)/RF_POSTERIORS*.nii.gz
 
