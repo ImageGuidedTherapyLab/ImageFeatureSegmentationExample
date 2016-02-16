@@ -17,6 +17,7 @@ SUBDIRS := $(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut
 gmmfeature: $(addsuffix /$(RFMODEL)/LABELS.RFGMM.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 png: $(addsuffix /Truth.png,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 
+
 CONTRAST = Pre Art Ven Del
 FEATURES = RAWIMAGE                                    \
            DENOISE                                     \
@@ -115,6 +116,14 @@ $(WORKDIR)/%/Truth.png: $(WORKDIR)/%/Mask.centroid.txt
 $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz 
 	mkdir -p $(WORKDIR)/$*
 	python Code/slicecentroid.py --imagefile=$< > $@
+
+# create csv file of image list
+$(WORKDIR)/%/FullImageList.csv: 
+	echo $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),                $(idim)_$(idft)       ))|  sed "s/\s\+/,/g" >  $@
+	echo $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),  $(WORKDIR)/$*/$(idim)_$(idft).nii.gz))|  sed "s/\s\+/,/g" >> $@
+
+#$(foreach idft,$(FEATURES),echo $(idft))
+#$(foreach var,$(wordlist  $(words $(LOWERCOUNT)), $(words $(UPPERCOUNT)),$(JOBLIST)),export GPUWORKDIR="optpp_pds/$(@:.gpu=)";echo $(var); dakota ./workdir/$(var)/opt/dakota_q_newton_$(OPTTYPE).in > ./workdir/$(var)/opt/dakota_q_newton_$(OPTTYPE).in.log 2>&1; export DISPLAY=$(VGLDISPLAY); python ./brainsearch.py --run_min ./workdir/$(var)/opt/optpp_pds.$(OPTTYPE) >> ./workdir/$(var)/opt/dakota_q_newton_$(OPTTYPE).in.log 2>&1;)
 
 #run mixture model to segment the image
 #https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
