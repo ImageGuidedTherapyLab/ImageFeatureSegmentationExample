@@ -1,4 +1,4 @@
-ROOTDIR=$(WORK)/github/LiverSegmentationExample
+ROOTDIR=$(PWD)
 SCRIPTSPATH=$(ROOTDIR)/Code
 ATROPOSCMD=$(ANTSPATH)/Atropos
 WORKDIR=workdir
@@ -34,6 +34,11 @@ $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.png: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.g
 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Mask.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=./LABELS.GMM.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
 
+$(DATADIR)/%/Mask.nii.gz: $(DATADIR)/%/Truth.nii.gz
+	mkdir -p $(WORKDIR)/$*
+	echo vglrun itksnap -g $(DATADIR)/$*/Art.nii.gz -s $(DATADIR)/$*/Truth.nii.gz
+	-c3d $(DATADIR)/$*/Art.nii.gz $(DATADIR)/$*/Truth.nii.gz  -lstat > $(WORKDIR)/$*/labelstat.txt 2>&1
+	$(C3DEXE) $<  -binarize  -o $@
 
 $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz 
 	mkdir -p $(WORKDIR)/$*
@@ -43,7 +48,7 @@ $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz
 #https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
 #https://www.gnu.org/software/make/manual/html_node/Secondary-Expansion.html#Secondary-Expansion
 .SECONDEXPANSION:
-$(WORKDIR)/%/$(RFMODEL)/LABELS.TRIGMM.nii.gz: $(WORKDIR)/$(RFMODEL) $(DATADIR)/$$*/Mask.nii.gz $(DATADIR)/$$*/Art.nii.gz $(DATADIR)/$$*/Ven.nii.gz $(DATADIR)/$$*/Del.nii.gz $(WORKDIR)/$$*/Mask.centroid.txt 
-	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^)  -l 1  -n Art -a $(word 3,$^)  -n Ven -a $(word 4,$^) -n Del -a $(word 5,$^) -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$*/texture -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  -e `cat $(word 6,$^)`
+$(WORKDIR)/%/$(RFMODEL)/LABELS.TRIGMM.nii.gz: $(WORKDIR)/$(RFMODEL) $(DATADIR)/$$*/Mask.nii.gz  $(WORKDIR)/$$*/Mask.centroid.txt 
+	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^)  -l 1  -n Pre -a $(DATADIR)/$*/Pre.nii.gz -n Art -a $(DATADIR)/$*/Art.nii.gz  -n Ven -a $(DATADIR)/$*/Ven.nii.gz -n Del -a $(DATADIR)/$*/Del.nii.gz -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$*/texture -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  -e `cat $(word 3,$^)`
 	$(ANTSIMAGEMATHCMD) 3 $@ MostLikely 0 $(WORKDIR)/$*/$(RFMODEL)/RF_POSTERIORS*.nii.gz
 

@@ -266,7 +266,6 @@ for (( i = 0; i < ${#ANATOMICAL_IMAGES[@]}; i++ ))
     if [[ ! -f ${ANATOMICAL_IMAGES[$i]} ]];
       then
         echo "The specified image \"${ANATOMICAL_IMAGES[$i]}\" does not exist."
-        exit 1
       fi
     if [[ -z ${IMAGE_NAMES[$i]} ]];
       then
