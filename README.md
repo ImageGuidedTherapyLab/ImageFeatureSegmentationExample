@@ -2,11 +2,7 @@
 
 ### Usage
 
-* while [ 1 ] ; do make -f makefile -i -k ; make -f makefile tex ;sleep 5 ; done
-
-* make -f prediction.makefile segmentation
-* make -f prediction.makefile volume
-* make -f prediction.makefile png
+* while [ 1 ] ; do make -f prediction.makefile -i -k gmmfeature; make -f prediction.makefile -i -k stats; make -f prediction.makefile tex ;sleep 5 ; done
 
 An example image set from a single study needed as input to the random
 forest models is shown below.

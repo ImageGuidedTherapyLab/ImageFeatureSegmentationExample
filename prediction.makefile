@@ -16,23 +16,84 @@ SUBDIRS := $(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut
 .SECONDARY: $(addsuffix /Mask.centroid.txt,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 gmmfeature: $(addsuffix /$(RFMODEL)/LABELS.RFGMM.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 png: $(addsuffix /Truth.png,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+
+CONTRAST = Pre Art Ven Del
+FEATURES = RAWIMAGE                                    \
+           DENOISE                                     \
+           RESCALE                                     \
+           GRADIENT                                    \
+           ATROPOS_GMM_CANNY                           \
+           ATROPOS_GMM_ECCENTRICITY                    \
+           ATROPOS_GMM_ELONGATION                      \
+           ATROPOS_GMM_LABEL1_DISTANCE                 \
+           ATROPOS_GMM                                 \
+           ATROPOS_GMM_PHYSICAL_VOLUME                 \
+           ATROPOS_GMM_POSTERIORS1                     \
+           ATROPOS_GMM_POSTERIORS2                     \
+           ATROPOS_GMM_POSTERIORS3                     \
+           ATROPOS_GMM_VOLUME_TO_SURFACE_AREA_RATIO    \
+           ENTROPY_RADIUS_1                            \
+           ENTROPY_RADIUS_3                            \
+           ENTROPY_RADIUS_5                            \
+           MEAN_RADIUS_1                               \
+           MEAN_RADIUS_3                               \
+           MEAN_RADIUS_5                               \
+           OTBClusterProminence_1                      \
+           OTBClusterProminence_3                      \
+           OTBClusterProminence_5                      \
+           OTBClusterShade_1                           \
+           OTBClusterShade_3                           \
+           OTBClusterShade_5                           \
+           OTBCorrelation_1                            \
+           OTBCorrelation_3                            \
+           OTBCorrelation_5                            \
+           OTBEnergy_1                                 \
+           OTBEnergy_3                                 \
+           OTBEnergy_5                                 \
+           OTBEntropy_1                                \
+           OTBEntropy_3                                \
+           OTBEntropy_5                                \
+           OTBHaralickCorrelation_1                    \
+           OTBHaralickCorrelation_3                    \
+           OTBHaralickCorrelation_5                    \
+           OTBInertia_1                                \
+           OTBInertia_3                                \
+           OTBInertia_5                                \
+           OTBInverseDifferenceMoment_1                \
+           OTBInverseDifferenceMoment_3                \
+           OTBInverseDifferenceMoment_5                \
+           SIGMA_RADIUS_1                              \
+           SIGMA_RADIUS_3                              \
+           SIGMA_RADIUS_5                              \
+           SKEWNESS_RADIUS_1                           \
+           SKEWNESS_RADIUS_3                           \
+           SKEWNESS_RADIUS_5                                 
+
+stats: $(foreach idft,$(FEATURES),      $(addsuffix /texturePre_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /textureArt_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /textureVen_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /textureDel_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(addsuffix /textureNORMALIZED_DISTANCE.lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+
+
 # TODO
 #segmentation: $(addsuffix /$(RFMODEL)/LABELS.GMM.nii.gz,$(addprefix $(WORKDIR)/,$(PREDICTLIST)))
 #volume: $(addsuffix /$(RFMODEL)/LABELS.GMM.VolStat.csv,$(addprefix $(WORKDIR)/,$(PREDICTLIST)))
 #png: $(addsuffix /$(RFMODEL)/LABELS.GMM.png,$(addprefix $(WORKDIR)/,$(PREDICTLIST)))
 
+# $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.png: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.gz
+# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Pre.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
+# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Art.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
+# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Ven.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
+# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Del.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
+# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Mask.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
+# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=./LABELS.GMM.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
+# 
+# $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.VolStat.csv: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.gz
+# 	echo vglrun itksnap -g $(DATADIR)/$*/Art.nii.gz -s $(DATADIR)/$*/Truth.nii.gz
+# 	cd $(WORKDIR)/$*/$(RFMODEL); c3d LABELS.GMM.nii.gz LABELS.GMM.nii.gz -lstat > LABELS.GMM.VolStat.txt ; sed "s/\s\+/,/g" LABELS.GMM.VolStat.txt > LABELS.GMM.VolStat.csv 
+# 
 
-$(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.png: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.gz
-	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Pre.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Art.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Ven.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Del.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Mask.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=./LABELS.GMM.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-
-$(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.VolStat.csv: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.gz
-	echo vglrun itksnap -g $(DATADIR)/$*/Art.nii.gz -s $(DATADIR)/$*/Truth.nii.gz
-	cd $(WORKDIR)/$*/$(RFMODEL); c3d LABELS.GMM.nii.gz LABELS.GMM.nii.gz -lstat > LABELS.GMM.VolStat.txt ; sed "s/\s\+/,/g" LABELS.GMM.VolStat.txt > LABELS.GMM.VolStat.csv 
 
 # create tex file for viewing
 tex:  png
@@ -57,10 +118,10 @@ $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz
 #https://www.gnu.org/software/make/manual/html_node/Secondary-Expansion.html#Secondary-Expansion
 .SECONDEXPANSION:
 $(WORKDIR)/%/$(RFMODEL)/LABELS.RFGMM.nii.gz: $(WORKDIR)/$(RFMODEL) $(DATADIR)/$$*/Mask.nii.gz  $(WORKDIR)/$$*/Mask.centroid.txt 
-	-c3d $(DATADIR)/$*/Pre.nii.gz $(DATADIR)/$*/Truth.nii.gz  -lstat > $(WORKDIR)/$*/Pre.lstat.txt 2>&1
-	-c3d $(DATADIR)/$*/Art.nii.gz $(DATADIR)/$*/Truth.nii.gz  -lstat > $(WORKDIR)/$*/Art.lstat.txt 2>&1
-	-c3d $(DATADIR)/$*/Ven.nii.gz $(DATADIR)/$*/Truth.nii.gz  -lstat > $(WORKDIR)/$*/Ven.lstat.txt 2>&1
-	-c3d $(DATADIR)/$*/Del.nii.gz $(DATADIR)/$*/Truth.nii.gz  -lstat > $(WORKDIR)/$*/Del.lstat.txt 2>&1
-	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^)  -l 1  -n Pre -a $(DATADIR)/$*/Pre.nii.gz -n Art -a $(DATADIR)/$*/Art.nii.gz  -n Ven -a $(DATADIR)/$*/Ven.nii.gz -n Del -a $(DATADIR)/$*/Del.nii.gz -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$*/texture -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  -e `cat $(word 3,$^)`
+	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^)  -l 1  -n Pre -a $(DATADIR)/$*/Pre.nii.gz -n Art -a $(DATADIR)/$*/Art.nii.gz  -n Ven -a $(DATADIR)/$*/Ven.nii.gz -n Del -a $(DATADIR)/$*/Del.nii.gz -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$*/ -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  -e `cat $(word 3,$^)`
 	$(ANTSIMAGEMATHCMD) 3 $@ MostLikely 0 $(WORKDIR)/$*/$(RFMODEL)/RF_POSTERIORS*.nii.gz
+
+#extract image statistics from label map
+$(WORKDIR)/%.lstat.csv:  $(WORKDIR)/%.nii.gz   $(DATADIR)/$$(*D)/Truth.nii.gz 
+	$(C3DEXE) $^ -lstat > $@.txt ; sed "s/^\s\+/$(firstword $(subst /, ,$(*D))),$(lastword $(subst /, ,$(*D))),$(*F),/g;s/\s\+/,/g;s/LabelID/DataID,Time,FeatureID,LabelID/g;s/Vol(mm^3)/Vol.mm.3/g;s/Extent(Vox)/ExtentX,ExtentY,ExtentZ/g" $@.txt > $@
 
