@@ -335,9 +335,10 @@ for (( i = 0; i < ${#ANATOMICAL_IMAGES[@]}; i++ ))
     RESCALED_IMAGES[${#RESCALED_IMAGES[@]}]=$RESCALE_IMAGE
     if [[ ! -f ${OUTPUT_IMAGE} ]];
       then
-        logCmd ${ANTSPATH}ImageMath 3 $OUTPUT_IMAGE TruncateImageIntensity ${ANATOMICAL_IMAGES[$i]} 0.01 0.99 200
+        logCmd ${ANTSPATH}ImageMath 3 $RAWIMAGE_IMAGE TruncateImageIntensity ${ANATOMICAL_IMAGES[$i]} 0.01 0.99 200
+        #logCmd ${ANTSPATH}ImageMath 3 $OUTPUT_IMAGE TruncateImageIntensity ${ANATOMICAL_IMAGES[$i]} 0.01 0.99 200
 #         logCmd ${ANTSPATH}N4BiasFieldCorrection -d 3 -c[20x20x20x10,0] -x $MASK_IMAGE -b [200] -s 2 -i $OUTPUT_IMAGE -o $OUTPUT_IMAGE
-        logCmd ${ANTSPATH}ImageMath 3 $RAWIMAGE_IMAGE m $MASK_IMAGE $OUTPUT_IMAGE
+        #logCmd ${ANTSPATH}ImageMath 3 $RAWIMAGE_IMAGE m $MASK_IMAGE $OUTPUT_IMAGE
         logCmd ${ANTSPATH}TotalVariationDenoisingImage $RAWIMAGE_IMAGE $OUTPUT_IMAGE .1 10 4
 #        logCmd ${ANTSPATH}ImageMath 3 $OUTPUT_IMAGE HistogramMatch $OUTPUT_IMAGE ${SYMMETRIC_TEMPLATES[$i]}  200 12
       fi
