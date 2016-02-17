@@ -258,18 +258,18 @@ if [[ ! -f ${MASK_IMAGE} ]];
   fi
 echo centroid $CENTROIDSLICE
 
-OUTPUT_IMAGE=${OUTPUT_PREFIX}MASKERODE.${OUTPUT_SUFFIX}
-if [[ ! -f ${OUTPUT_IMAGE} ]];
-  then
-    logCmd c3d ${MASK_IMAGE} -erode 1 3x3x0vox -o $OUTPUT_IMAGE
-  fi
-MASK_IMAGE=$OUTPUT_IMAGE
-
-PNG_IMAGE=${OUTPUT_PREFIX}MASKERODE.png
-if [[ ! -f ${PNG_IMAGE} ]];
-  then
-    logCmd c3d $OUTPUT_IMAGE -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc $PNG_IMAGE
-  fi
+#OUTPUT_IMAGE=${OUTPUT_PREFIX}MASKERODE.${OUTPUT_SUFFIX}
+#if [[ ! -f ${OUTPUT_IMAGE} ]];
+#  then
+#    logCmd c3d ${MASK_IMAGE} -erode 1 3x3x0vox -o $OUTPUT_IMAGE
+#  fi
+#MASK_IMAGE=$OUTPUT_IMAGE
+#
+#PNG_IMAGE=${OUTPUT_PREFIX}MASKERODE.png
+#if [[ ! -f ${PNG_IMAGE} ]];
+#  then
+#    logCmd c3d $OUTPUT_IMAGE -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc $PNG_IMAGE
+#  fi
 
 
 if [[ ${#ANATOMICAL_IMAGES[@]} -lt 3 ]];
