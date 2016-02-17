@@ -69,21 +69,24 @@ cat( "Unique truth labels: ", uniqueTruthLabels, "\n", sep = " " )
 subjectData[, length( featureNames )+1] <- truthImage[maskIndices]
 colnames( subjectData ) <- c( featureNames, "Labels" )
 
-print( "formatting ...  ")
-subjectData        <- as.data.frame( subjectData )
-subjectData$Labels <- as.factor(     subjectData$Labels )
-
 # If the subject data has NA's, we need to get rid of them
 # since predict.randomForest will return NA's otherwise.
 # Setting NA's to 0 is a complete hack.
+print( "cleaning up ...  ")
 subjectData[is.na( subjectData )] <- 0
+
+print( "formatting ...  ")
+subjectData        <- as.data.frame( subjectData )
+subjectData$Labels <- as.factor(     subjectData$Labels )
 print(head(subjectData,n=10))
 
-
+# FIXME filter zero's
+print( "saving ...  ")
 save( subjectData, file = outputDataFileName)
 cat("File size (MB):",round(file.info(outputDataFileName)$size/1024^2),"\n")
 
 # compute p-values
+print( "compute predictors ...  ")
 normalsubset   = subset(subjectData, Labels == 1 )
 viablesubset   = subset(subjectData, Labels == 2 )
 necrosissubset = subset(subjectData, Labels == 3 )
