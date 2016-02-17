@@ -13,10 +13,11 @@ RFMODEL=FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.
 # new cases automagically added
 SUBDIRS := $(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut -d'/' -f 2-)
  
-.SECONDARY: $(addsuffix /Mask.centroid.txt,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+.SECONDARY: $(addsuffix /Mask.centroid.txt,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  \
+            $(addsuffix /FullImageList.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 gmmfeature: $(addsuffix /$(RFMODEL)/LABELS.RFGMM.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 png: $(addsuffix /Truth.png,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
-
+predictors: $(addsuffix /TopPredictors.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 
 CONTRAST = Pre Art Ven Del
 FEATURES = RAWIMAGE                                    \
@@ -100,8 +101,8 @@ csv:
 
 
 # create tex file for viewing
-tex:  png
-	for  iddata in $(SUBDIRS) ;do echo   "\\\\viewdata{$(WORKDIR)/$$iddata/}{Pre}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Art}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Ven}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Del}\n" | sort -V > DoNotCOMMIT.tex; pdflatex -output-directory $(WORKDIR)/$$iddata/ ViewProcessed.tex ; done 
+tex:  png predictors
+	for  iddata in $(SUBDIRS) ;do echo   "\\\\IfFileExists{$(WORKDIR)/$$iddata/TopPredictors.csv}{\\\\verbatiminput{$(WORKDIR)/$$iddata/TopPredictors.csv}}{predictors not found}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Pre}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Art}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Ven}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Del}\n" | sort -V > DoNotCOMMIT.tex; pdflatex -output-directory $(WORKDIR)/$$iddata/ ViewProcessed.tex ; done 
 	pdftk `ls $(WORKDIR)/*/*/*.pdf | sort -V` cat output  out.pdf
 
 # create mask from truth image if does not exist
@@ -119,8 +120,12 @@ $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz
 
 # create csv file of image list
 $(WORKDIR)/%/FullImageList.csv: $(DATADIR)/%/Mask.nii.gz $(DATADIR)/%/Truth.nii.gz
-	echo   MASK   TRUTH           NORMALIZED_DISTANCE        $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),                $(idim)_$(idft)       ))|  sed "s/\s\+/,/g" >  $@
-	echo       $^   $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),  $(WORKDIR)/$*/$(idim)_$(idft).nii.gz))|  sed "s/\s\+/,/g" >> $@
+	echo  \"MASK\"   \"TRUTH\"                  \"NORMALIZED_DISTANCE\"       $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),               \"$(idim)_$(idft)\"       ))|  sed "s/\s\+/,/g" >  $@
+	echo  \"$<\" \"$(word 2,$^)\"  $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES), \"$(WORKDIR)/$*/$(idim)_$(idft).nii.gz\"))|  sed "s/\s\+/,/g" >> $@
+
+# create csv file of top image predictors
+$(WORKDIR)/%/TopPredictors.csv: $(WORKDIR)/%/FullImageList.csv
+	Rscript Code/imageStatistics.R 3 $< $(@D)
 
 #run mixture model to segment the image
 #https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html

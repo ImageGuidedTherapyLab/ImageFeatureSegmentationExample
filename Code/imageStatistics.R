@@ -11,7 +11,9 @@ stopQuietly <- function(...)
   } # stopQuietly()
 
 args <- commandArgs( trailingOnly = TRUE )
-args <- c( "3","./workdir/Predict1001/before/FullImageList.csv","./workdir/Predict1001/before/FullImageList.Rdata")
+#args <- c( "3","./workdir/Predict1001/before/FullImageList.csv","./workdir/Predict1001/before/")
+#args <- c( "3","workdir/Predict1002/01012000/FullImageList.csv","workdir/Predict1002/01012000")
+ 
 
 
 ###############################################
@@ -29,7 +31,9 @@ if( length( args ) < 3 )
 
 dimension <- as.numeric( args[1] )
 fileList <- read.csv( args[2] )
-outputDataFileName <- args[3]
+outputDataFileBase <- args[3]
+outputDataFileName = paste( outputDataFileBase, "/ImageData.Rdata", sep = "")
+outputDataCSVFile  = paste( outputDataFileBase, "/TopPredictors.csv", sep = "")
 
 ###############################################
 #
@@ -74,6 +78,7 @@ subjectData$Labels <- as.factor(     subjectData$Labels )
 # Setting NA's to 0 is a complete hack.
 subjectData[is.na( subjectData )] <- 0
 print(head(subjectData,n=10))
+
 
 save( subjectData, file = outputDataFileName)
 cat("File size (MB):",round(file.info(outputDataFileName)$size/1024^2),"\n")
@@ -129,6 +134,10 @@ print( sort(normalviablepvalue[  1,])[1:20] )
 #print( sort(necrosisviablepvalue[1,])[1:20] )
 #print( sort(tissuekruskalpvalue[ 1,])[1:20] )
 
+# save top predictors
+# FIXME - format
+toppredictors <- sort(normalviablepvalue[  1,])[1:20] 
+write.csv( toppredictors  , file = outputDataCSVFile )
 
 #sort(normalviablepvalue[  2,],decreasing=TRUE)
 #sort(normalnecrosispvalue[2,],decreasing=TRUE)
