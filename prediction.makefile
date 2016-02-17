@@ -118,12 +118,9 @@ $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz
 	python Code/slicecentroid.py --imagefile=$< > $@
 
 # create csv file of image list
-$(WORKDIR)/%/FullImageList.csv: 
-	echo $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),                $(idim)_$(idft)       ))|  sed "s/\s\+/,/g" >  $@
-	echo $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),  $(WORKDIR)/$*/$(idim)_$(idft).nii.gz))|  sed "s/\s\+/,/g" >> $@
-
-#$(foreach idft,$(FEATURES),echo $(idft))
-#$(foreach var,$(wordlist  $(words $(LOWERCOUNT)), $(words $(UPPERCOUNT)),$(JOBLIST)),export GPUWORKDIR="optpp_pds/$(@:.gpu=)";echo $(var); dakota ./workdir/$(var)/opt/dakota_q_newton_$(OPTTYPE).in > ./workdir/$(var)/opt/dakota_q_newton_$(OPTTYPE).in.log 2>&1; export DISPLAY=$(VGLDISPLAY); python ./brainsearch.py --run_min ./workdir/$(var)/opt/optpp_pds.$(OPTTYPE) >> ./workdir/$(var)/opt/dakota_q_newton_$(OPTTYPE).in.log 2>&1;)
+$(WORKDIR)/%/FullImageList.csv: $(DATADIR)/%/Mask.nii.gz $(DATADIR)/%/Truth.nii.gz
+	echo   MASK   TRUTH           NORMALIZED_DISTANCE        $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),                $(idim)_$(idft)       ))|  sed "s/\s\+/,/g" >  $@
+	echo       $^   $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),  $(WORKDIR)/$*/$(idim)_$(idft).nii.gz))|  sed "s/\s\+/,/g" >> $@
 
 #run mixture model to segment the image
 #https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
