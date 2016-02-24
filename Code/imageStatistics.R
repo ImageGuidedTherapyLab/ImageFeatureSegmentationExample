@@ -14,6 +14,7 @@ args <- commandArgs( trailingOnly = TRUE )
 #args <- c( "3","./workdir/Predict1001/before/FullImageList.csv","./workdir/Predict1001/before/")
 #args <- c( "3","workdir/Predict1002/01012000/FullImageList.csv","workdir/Predict1002/01012000")
 #args <- c( "3","workdir/Predict1001/before/FullImageList.csv","workdir/Predict1001/before")
+#args <- c( "3","workdir/882371/06032015/FullImageList.csv","workdir/882371/06032015")
  
 
 
@@ -48,11 +49,18 @@ featureImages <- fileList[1,3:ncol( fileList )]
 featureNames  <- colnames( featureImages )
 
 ## read mask
+print( paste("loading ",as.character( maskName ),sep=""))
 maskImage <- antsImageRead( as.character( maskName ), dimension = dimension, pixeltype = 'unsigned int' )
 mask <- as.array( maskImage )
 maskIndices <- which( mask != 0 )
 
 ## load feature images
+if( as.numeric(length( maskIndices ))*as.numeric(length( featureNames )) * 8. /1.e9 > 50.)
+  {
+  print( paste("matrix",length( maskIndices ),"x",length( featureNames ) , "too large...",sep=" "))
+  stopQuietly()
+  }
+
 subjectData <- matrix( NA, nrow = length( maskIndices ), ncol = length( featureNames )+1 )
 for( j in 1:length( featureNames ) )
   {
