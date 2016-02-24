@@ -119,9 +119,9 @@ $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz
 	python Code/slicecentroid.py --imagefile=$< > $@
 
 # create csv file of image list
-$(WORKDIR)/%/FullImageList.csv: $(DATADIR)/%/Mask.nii.gz $(DATADIR)/%/Truth.nii.gz
-	echo  \"MASK\"   \"TRUTH\"                  \"NORMALIZED_DISTANCE\"       $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),               \"$(idim)_$(idft)\"       ))|  sed "s/\s\+/,/g" >  $@
-	echo  \"$<\" \"$(word 2,$^)\"  $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES), \"$(WORKDIR)/$*/$(idim)_$(idft).nii.gz\"))|  sed "s/\s\+/,/g" >> $@
+$(WORKDIR)/%/FullImageList.csv: $(DATADIR)/%/Mask.nii.gz 
+	echo  "MASK"     "TRUTH"                      "NORMALIZED_DISTANCE"       $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),               "$(idim)_$(idft)"       ))|  sed "s/\s\+/,/g" >  $@
+	echo  "$<" "$(<D)/Truth.nii.gz"  $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES), "$(WORKDIR)/$*/$(idim)_$(idft).nii.gz"))|  sed "s/\s\+/,/g" >> $@
 
 # create csv file of top image predictors
 $(WORKDIR)/%/TopPredictors.csv: $(WORKDIR)/%/FullImageList.csv
