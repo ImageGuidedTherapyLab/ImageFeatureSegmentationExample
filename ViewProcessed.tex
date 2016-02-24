@@ -70,63 +70,63 @@
 \newcommand\viewdata[2]{
 \begin{figure}[h]
 \begin{tabular}{cccccccc} 
- \IfFileExists{./#1/texture#2.png               }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2.png}               }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_MEAN_RADIUS_1.png }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_MEAN_RADIUS_1.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_MEAN_RADIUS_3.png }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_MEAN_RADIUS_3.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_MEAN_RADIUS_5.png }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_MEAN_RADIUS_5.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_SIGMA_RADIUS_1.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_SIGMA_RADIUS_1.png} }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_SIGMA_RADIUS_3.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_SIGMA_RADIUS_3.png} }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_SIGMA_RADIUS_5.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_SIGMA_RADIUS_5.png} }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+ \IfFileExists{./#1/#2.png               }{\includegraphics[width=0.1\textwidth]{./{#1}/#2.png}               }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_MEAN_RADIUS_1.png }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_MEAN_RADIUS_1.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_MEAN_RADIUS_3.png }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_MEAN_RADIUS_3.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_MEAN_RADIUS_5.png }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_MEAN_RADIUS_5.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_SIGMA_RADIUS_1.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_SIGMA_RADIUS_1.png} }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_SIGMA_RADIUS_3.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_SIGMA_RADIUS_3.png} }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_SIGMA_RADIUS_5.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_SIGMA_RADIUS_5.png} }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
 \\ 
 orig    &  mean-1  & mean-3 & mean-5 & sigma-1  & sigma-3 & sigma-5 
 \\ 
  \IfFileExists{./#1/Truth.png                              }{\includegraphics[width=0.1\textwidth]{./{#1}/Truth.png}                                 }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_ATROPOS_GMM_POSTERIORS1.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_ATROPOS_GMM_POSTERIORS1.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_ATROPOS_GMM_POSTERIORS2.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_ATROPOS_GMM_POSTERIORS2.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_ATROPOS_GMM_POSTERIORS3.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_ATROPOS_GMM_POSTERIORS3.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_SKEWNESS_RADIUS_1.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_SKEWNESS_RADIUS_1.png}        }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_SKEWNESS_RADIUS_3.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_SKEWNESS_RADIUS_3.png}        }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_SKEWNESS_RADIUS_5.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_SKEWNESS_RADIUS_5.png}        }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_ATROPOS_GMM_POSTERIORS1.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_ATROPOS_GMM_POSTERIORS1.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_ATROPOS_GMM_POSTERIORS2.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_ATROPOS_GMM_POSTERIORS2.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_ATROPOS_GMM_POSTERIORS3.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_ATROPOS_GMM_POSTERIORS3.png}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_SKEWNESS_RADIUS_1.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_SKEWNESS_RADIUS_1.png}        }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_SKEWNESS_RADIUS_3.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_SKEWNESS_RADIUS_3.png}        }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_SKEWNESS_RADIUS_5.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_SKEWNESS_RADIUS_5.png}        }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
 \\ 
 Truth    &  post-1  & post-2 & post-3 & skew-1  & skew-3 & skew-5 
 \\ 
- \IfFileExists{./#1/textureNORMALIZED_DISTANCE.png             }{\includegraphics[width=0.1\textwidth]{./{#1}/textureNORMALIZED_DISTANCE.png}               }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_ENTROPY_RADIUS_1.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_ENTROPY_RADIUS_1.png}             }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_ENTROPY_RADIUS_3.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_ENTROPY_RADIUS_3.png}             }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_ENTROPY_RADIUS_5.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_ENTROPY_RADIUS_5.png}             }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_ATROPOS_GMM_ECCENTRICITY.png   }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_ATROPOS_GMM_ECCENTRICITY.png}     }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_ATROPOS_GMM_ELONGATION.png     }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_ATROPOS_GMM_ELONGATION.png}       }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_GRADIENT.png                   }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_GRADIENT.png}                     }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+ \IfFileExists{./#1/NORMALIZED_DISTANCE.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/NORMALIZED_DISTANCE.png}               }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_ENTROPY_RADIUS_1.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_ENTROPY_RADIUS_1.png}             }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_ENTROPY_RADIUS_3.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_ENTROPY_RADIUS_3.png}             }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_ENTROPY_RADIUS_5.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_ENTROPY_RADIUS_5.png}             }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_ATROPOS_GMM_ECCENTRICITY.png   }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_ATROPOS_GMM_ECCENTRICITY.png}     }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_ATROPOS_GMM_ELONGATION.png     }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_ATROPOS_GMM_ELONGATION.png}       }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_GRADIENT.png                   }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_GRADIENT.png}                     }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
 \\ 
 distance    &  entropy-1  & entropy-3 & entropy-5 & eccentricity-1  & elongation-3 & gradient
 \\ 
- \IfFileExists{./#1/texture#2_OTBClusterProminence_1.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBClusterProminence_1.png}      }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBEnergy_1.png                 }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBEnergy_1.png}                 }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBInertia_1.png                }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBInertia_1.png}                }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBClusterShade_1.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBClusterShade_1.png}           }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBInverseDifferenceMoment_1.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBInverseDifferenceMoment_1.png}}{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBCorrelation_1.png            }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBCorrelation_1.png}            }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBHaralickCorrelation_1.png    }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBHaralickCorrelation_1.png}    }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+ \IfFileExists{./#1/#2_OTBClusterProminence_1.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBClusterProminence_1.png}      }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBEnergy_1.png                 }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBEnergy_1.png}                 }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBInertia_1.png                }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBInertia_1.png}                }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBClusterShade_1.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBClusterShade_1.png}           }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBInverseDifferenceMoment_1.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBInverseDifferenceMoment_1.png}}{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBCorrelation_1.png            }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBCorrelation_1.png}            }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBHaralickCorrelation_1.png    }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBHaralickCorrelation_1.png}    }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
 \\ 
 ClusterProm-1 &Energy-1 &Inertia-1 &ClusterShade-1 &InvDiffMoment-1 &Correlation-1 &Haralick-1
 \\ 
- \IfFileExists{./#1/texture#2_OTBClusterProminence_3.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBClusterProminence_3.png}      }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBEnergy_3.png                 }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBEnergy_3.png}                 }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBInertia_3.png                }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBInertia_3.png}                }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBClusterShade_3.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBClusterShade_3.png}           }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBInverseDifferenceMoment_3.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBInverseDifferenceMoment_3.png}}{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBCorrelation_3.png            }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBCorrelation_3.png}            }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBHaralickCorrelation_3.png    }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBHaralickCorrelation_3.png}    }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+ \IfFileExists{./#1/#2_OTBClusterProminence_3.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBClusterProminence_3.png}      }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBEnergy_3.png                 }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBEnergy_3.png}                 }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBInertia_3.png                }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBInertia_3.png}                }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBClusterShade_3.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBClusterShade_3.png}           }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBInverseDifferenceMoment_3.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBInverseDifferenceMoment_3.png}}{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBCorrelation_3.png            }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBCorrelation_3.png}            }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBHaralickCorrelation_3.png    }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBHaralickCorrelation_3.png}    }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
 \\ 
 ClusterProm-3 &Energy-3 &Inertia-3 &ClusterShade-3 &InvDiffMoment-3 &Correlation-3 &Haralick-3
 \\ 
- \IfFileExists{./#1/texture#2_OTBClusterProminence_5.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBClusterProminence_5.png}      }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBEnergy_5.png                 }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBEnergy_5.png}                 }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBInertia_5.png                }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBInertia_5.png}                }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBClusterShade_5.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBClusterShade_5.png}           }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBInverseDifferenceMoment_5.png}{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBInverseDifferenceMoment_5.png}}{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBCorrelation_5.png            }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBCorrelation_5.png}            }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-&\IfFileExists{./#1/texture#2_OTBHaralickCorrelation_5.png    }{\includegraphics[width=0.1\textwidth]{./{#1}/texture#2_OTBHaralickCorrelation_5.png}    }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+ \IfFileExists{./#1/#2_OTBClusterProminence_5.png      }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBClusterProminence_5.png}      }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBEnergy_5.png                 }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBEnergy_5.png}                 }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBInertia_5.png                }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBInertia_5.png}                }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBClusterShade_5.png           }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBClusterShade_5.png}           }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBInverseDifferenceMoment_5.png}{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBInverseDifferenceMoment_5.png}}{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBCorrelation_5.png            }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBCorrelation_5.png}            }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+&\IfFileExists{./#1/#2_OTBHaralickCorrelation_5.png    }{\includegraphics[width=0.1\textwidth]{./{#1}/#2_OTBHaralickCorrelation_5.png}    }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
 \\ 
 ClusterProm-5 &Energy-5 &Inertia-5 &ClusterShade-5 &InvDiffMoment-5 &Correlation-5 &Haralick-5
 \end{tabular}           

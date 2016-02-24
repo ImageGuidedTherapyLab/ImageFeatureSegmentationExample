@@ -18,6 +18,9 @@ SUBDIRS := $(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut
 gmmfeature: $(addsuffix /$(RFMODEL)/LABELS.RFGMM.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 png: $(addsuffix /Truth.png,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 predictors: $(addsuffix /TopPredictors.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+# create tex file for viewing
+tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+
 
 CONTRAST = Pre Art Ven Del
 FEATURES = RAWIMAGE                                    \
@@ -100,10 +103,10 @@ csv:
 # 
 
 
-# create tex file for viewing
-tex:  png predictors
-	for  iddata in $(SUBDIRS) ;do echo   "\\\\IfFileExists{$(WORKDIR)/$$iddata/TopPredictors.csv}{\\\\verbatiminput{$(WORKDIR)/$$iddata/TopPredictors.csv}}{predictors not found}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Pre}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Art}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Ven}\n\\\\viewdata{$(WORKDIR)/$$iddata/}{Del}\n" | sort -V > DoNotCOMMIT.tex; pdflatex -output-directory $(WORKDIR)/$$iddata/ ViewProcessed.tex ; done 
-	pdftk `ls $(WORKDIR)/*/*/*.pdf | sort -V` cat output  out.pdf
+# create csv file of top image predictors
+#	pdftk `ls $(WORKDIR)/*/*/*.pdf | sort -V` cat output  out.pdf
+$(WORKDIR)/%/ViewProcessed.pdf: $(WORKDIR)/%/TopPredictors.csv
+	echo "\\IfFileExists{$(WORKDIR)/$*/TopPredictors.csv}{\\verbatiminput{$(WORKDIR)/$*/TopPredictors.csv}}{predictors not found}\\viewdata{$(WORKDIR)/$*/}{Pre}\\viewdata{$(WORKDIR)/$*/}{Art}\\viewdata{$(WORKDIR)/$*/}{Ven}\\viewdata{$(WORKDIR)/$*/}{Del}" | sort -V > DoNotCOMMIT.tex; pdflatex -output-directory $(WORKDIR)/$*/ ViewProcessed.tex 
 
 # create mask from truth image if does not exist
 $(DATADIR)/%/Mask.nii.gz: $(DATADIR)/%/Truth.nii.gz
