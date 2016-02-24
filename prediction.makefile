@@ -18,9 +18,12 @@ SUBDIRS := $(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut
 gmmfeature: $(addsuffix /$(RFMODEL)/LABELS.RFGMM.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 png: $(addsuffix /Truth.png,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 predictors: $(addsuffix /TopPredictors.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
-# create tex file for viewing
-tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 
+# create tex file for viewing
+tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS))) 
+
+summary.pdf: tex
+	pdftk `ls workdir/*/*/*.pdf | sort -V` cat output  summary.pdf
 
 CONTRAST = Pre Art Ven Del
 FEATURES = RAWIMAGE                                    \
@@ -104,7 +107,6 @@ csv:
 
 
 # create csv file of top image predictors
-#	pdftk `ls $(WORKDIR)/*/*/*.pdf | sort -V` cat output  out.pdf
 $(WORKDIR)/%/ViewProcessed.pdf: $(WORKDIR)/%/TopPredictors.csv
 	echo "\\IfFileExists{$(WORKDIR)/$*/TopPredictors.csv}{\\verbatiminput{$(WORKDIR)/$*/TopPredictors.csv}}{predictors not found}\\viewdata{$(WORKDIR)/$*/}{Pre}\\viewdata{$(WORKDIR)/$*/}{Art}\\viewdata{$(WORKDIR)/$*/}{Ven}\\viewdata{$(WORKDIR)/$*/}{Del}" | sort -V > DoNotCOMMIT.tex; pdflatex -output-directory $(WORKDIR)/$*/ ViewProcessed.tex 
 
