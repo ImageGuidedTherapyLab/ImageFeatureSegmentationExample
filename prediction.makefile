@@ -111,7 +111,7 @@ $(DATADIR)/%/Mask.nii.gz: $(DATADIR)/%/Truth.nii.gz
 	$(C3DEXE) $<  -binarize  -o $@
 
 $(WORKDIR)/%/Truth.png: $(WORKDIR)/%/Mask.centroid.txt
-	-c3d $(DATADIR)/$*/Truth.nii -slice z `cat $<` -dup -oli Code/dfltlabels.txt 1.0   -type uchar -omc $(WORKDIR)/$*/Truth.png
+	-c3d $(DATADIR)/$*/Truth.nii.gz -slice z `cat $<` -dup -oli Code/dfltlabels.txt 1.0   -type uchar -omc $(WORKDIR)/$*/Truth.png
 
 # get image centroid for plotting
 $(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz 

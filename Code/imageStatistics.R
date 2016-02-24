@@ -13,6 +13,7 @@ stopQuietly <- function(...)
 args <- commandArgs( trailingOnly = TRUE )
 #args <- c( "3","./workdir/Predict1001/before/FullImageList.csv","./workdir/Predict1001/before/")
 #args <- c( "3","workdir/Predict1002/01012000/FullImageList.csv","workdir/Predict1002/01012000")
+#args <- c( "3","workdir/Predict1001/before/FullImageList.csv","workdir/Predict1001/before")
  
 
 
@@ -104,10 +105,11 @@ colnames( necrosisviablepvalue ) <- c( featureNames)
 for (iii in 1:length(featureNames))
 {
   print(featureNames[iii] )
-  normalviablettest    =      t.test( normalsubset[[featureNames[iii]]],   viablesubset[[featureNames[iii]]])
+  normalviablettest    =      try(t.test( normalsubset[[featureNames[iii]]],   viablesubset[[featureNames[iii]]]))
   #normalnecrosisttest  =      t.test( normalsubset[[featureNames[iii]]], necrosissubset[[featureNames[iii]]])
   #necrosisviablettest  =      t.test( viablesubset[[featureNames[iii]]], necrosissubset[[featureNames[iii]]])
-  normalviablewilcox   = wilcox.test( normalsubset[[featureNames[iii]]],   viablesubset[[featureNames[iii]]])
+  normalviablewilcox   = try(wilcox.test( normalsubset[[featureNames[iii]]],   viablesubset[[featureNames[iii]]]))
+
   #normalnecrosiswilcox = wilcox.test( normalsubset[[featureNames[iii]]], necrosissubset[[featureNames[iii]]])
   #necrosisviablewilcox = wilcox.test( viablesubset[[featureNames[iii]]], necrosissubset[[featureNames[iii]]])
   #tissuekruskaltest    =     kruskal.test( subjectData[[featureNames[iii]]], subjectData$Labels)
@@ -121,10 +123,12 @@ for (iii in 1:length(featureNames))
   #print( tissuekruskaltest   )
 
   #tissuekruskalpvalue[ 1,iii]  =   2*dchisq(tissuekruskaltest$statistic, tissuekruskaltest$parameter,log=TRUE)
-  normalviablepvalue[  1,iii]  =   2*pt( -abs(   normalviablettest$statistic), df=   normalviablettest$parameter,log=TRUE)
+  
+  if (is(normalviablettest, "try-error")){normalviablepvalue[  1,iii] =NA}else{normalviablepvalue[  1,iii]  =   2*pt( -abs(   normalviablettest$statistic), df=   normalviablettest$parameter,log=TRUE)}
   #normalnecrosispvalue[1,iii]  =   2*pt( -abs( normalnecrosisttest$statistic), df= normalnecrosisttest$parameter,log=TRUE)
   #necrosisviablepvalue[1,iii]  =   2*pt( -abs( necrosisviablettest$statistic), df= necrosisviablettest$parameter,log=TRUE)
-  normalviablepvalue[  2,iii]  =                normalviablewilcox$p.value
+  
+  if (is(normalviablewilcox, "try-error")){normalviablepvalue[  2,iii]=NA}else{normalviablepvalue[  2,iii]=normalviablewilcox$p.value}
   #normalnecrosispvalue[2,iii]  =              normalnecrosiswilcox$p.value
   #necrosisviablepvalue[2,iii]  =              necrosisviablewilcox$p.value
 }
