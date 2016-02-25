@@ -80,6 +80,7 @@ Required arguments:
      -b:  number of clusters                    If -c is specified, this option is not needed.
      -t:  symmetric anatomical templates        Symmetric templates.  Need to be specified in the same order as
                                                 the input anatomical images.
+     -z:  0,1                                   enable otb texture features
      -x:  mask image                            Mask image defining the region of interest.
      -o:  output prefix                         The following images are created:
                                                   * ${OUTPUT_PREFIX}N4Corrected.${OUTPUT_SUFFIX}
@@ -168,6 +169,7 @@ RADII=()
 SMOOTHING_SIGMA=0
 CORE_LABEL=5
 CENTROIDSLICE=1
+ENABLEOTB=0
 
 ################################################################################
 #
@@ -179,7 +181,7 @@ if [[ $# -lt 3 ]] ; then
   Usage >&2
   exit 1
 else
-  while getopts "a:b:c:d:e:f:h:k:l:m:n:o:p:r:s:t:x:" OPT
+  while getopts "a:b:c:d:e:f:h:k:l:m:n:o:p:r:s:t:x:z:" OPT
     do
       case $OPT in
           a) #anatomical image
@@ -238,6 +240,9 @@ else
        ;;
           x)
        MASK_IMAGE=$OPTARG
+       ;;
+          z)
+       ENABLEOTB=$OPTARG
        ;;
           *) # getopts issues an error message
        echo "ERROR:  unrecognized option -$OPT $OPTARG"
@@ -334,7 +339,7 @@ echo "Create feature images"
 #
 echo "######################################################################################"
 
-COMMAND_LINE="-d ${DIMENSION} -x ${MASK_IMAGE} -o ${OUTPUT_PREFIX} -e ${CENTROIDSLICE}"
+COMMAND_LINE="-d ${DIMENSION} -x ${MASK_IMAGE} -z ${ENABLEOTB} -o ${OUTPUT_PREFIX} -e ${CENTROIDSLICE}"
 for (( i = 0; i < ${#ANATOMICAL_IMAGES[@]}; i++ ))
   do
     COMMAND_LINE="${COMMAND_LINE} -a ${ANATOMICAL_IMAGES[$i]}"

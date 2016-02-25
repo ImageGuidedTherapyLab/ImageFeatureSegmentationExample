@@ -9,6 +9,9 @@ ANTSAPPLYTRANSFORMSCMD=$(ANTSPATH)/antsApplyTransforms
 ANTSIMAGEMATHCMD=$(ANTSPATH)/ImageMath
 PNGSLICE=python $(SCRIPTSPATH)/viewsoln.py --labelfile=$(SCRIPTSPATH)/dfltlabels.txt 
 RFMODEL=FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel
+# control texture features
+RUNOTB=1
+RUNOTB=0
 
 TESTCASES := Predict1000/before Predict1001/before Predict1002/before
 # new cases automagically added
@@ -142,7 +145,7 @@ $(WORKDIR)/%/TopPredictors.csv: $(WORKDIR)/%/FullImageList.csv
 #https://www.gnu.org/software/make/manual/html_node/Secondary-Expansion.html#Secondary-Expansion
 .SECONDEXPANSION:
 $(WORKDIR)/%/$(RFMODEL)/LABELS.RFGMM.nii.gz: $(WORKDIR)/$(RFMODEL) $(DATADIR)/$$*/Mask.nii.gz  $(WORKDIR)/$$*/Mask.centroid.txt 
-	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^)  -l 1  -n Pre -a $(DATADIR)/$*/Pre.nii.gz -n Art -a $(DATADIR)/$*/Art.nii.gz  -n Ven -a $(DATADIR)/$*/Ven.nii.gz -n Del -a $(DATADIR)/$*/Del.nii.gz -r 1 -r 3 -r 5 -s 2 -b 3  -o $(WORKDIR)/$*/ -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  -e `cat $(word 3,$^)`
+	export SCRIPTSPATH=$(SCRIPTSPATH); mkdir -p $(WORKDIR)/$*/$(RFMODEL);  $(SCRIPTSPATH)/applyTumorSegmentationModel.sh  -d 3 -x $(word 2,$^)  -l 1  -n Pre -a $(DATADIR)/$*/Pre.nii.gz -n Art -a $(DATADIR)/$*/Art.nii.gz  -n Ven -a $(DATADIR)/$*/Ven.nii.gz -n Del -a $(DATADIR)/$*/Del.nii.gz -r 1 -r 3 -r 5 -s 2 -b 3 -z $(RUNOTB) -o $(WORKDIR)/$*/ -k $(WORKDIR)/$*/$(RFMODEL)/ -m $<  -e `cat $(word 3,$^)`
 	$(ANTSIMAGEMATHCMD) 3 $@ MostLikely 0 $(WORKDIR)/$*/$(RFMODEL)/RF_POSTERIORS*.nii.gz
 
 #extract image statistics from label map

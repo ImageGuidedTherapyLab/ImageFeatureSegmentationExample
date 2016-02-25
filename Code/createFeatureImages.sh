@@ -50,6 +50,7 @@ Required arguments:
                                                 or the truth labels (for training) but not both.
      -t:  symmetric anatomical templates        Symmetric templates.  Need to be specified in the same order as
                                                 the input anatomical images.
+     -z:  0,1                                   enable otb texture features
      -x:  mask image                            Mask image defining the region of interest.
      -o:  output prefix                         The following images are created:
                                                   * ${OUTPUT_PREFIX}N4Corrected.${OUTPUT_SUFFIX}
@@ -143,6 +144,7 @@ RADII=()
 SMOOTHING_SIGMA=0
 CORE_LABEL=5
 CENTROIDSLICE=1
+ENABLEOTB=0
 
 ################################################################################
 #
@@ -154,7 +156,7 @@ if [[ $# -lt 3 ]] ; then
   Usage >&2
   exit 1
 else
-  while getopts "a:b:c:d:e:f:g:h:l:n:o:p:r:s:t:u:x:" OPT
+  while getopts "a:b:c:d:e:f:g:h:l:n:o:p:r:s:t:u:x:z:" OPT
     do
       case $OPT in
           a) #anatomical image
@@ -214,6 +216,9 @@ else
           x)
        MASK_IMAGE=$OPTARG
        ;;
+          z)
+       ENABLEOTB=$OPTARG
+       ;;
           *) # getopts issues an error message
        echo "ERROR:  unrecognized option -$OPT $OPTARG"
        exit 1
@@ -257,6 +262,7 @@ if [[ ! -f ${MASK_IMAGE} ]];
     exit 1
   fi
 echo centroid $CENTROIDSLICE
+echo OTB $ENABLEOTB
 
 #OUTPUT_IMAGE=${OUTPUT_PREFIX}MASKERODE.${OUTPUT_SUFFIX}
 #if [[ ! -f ${OUTPUT_IMAGE} ]];
@@ -498,7 +504,7 @@ for (( i = 0; i < ${#NORMALIZED_IMAGES[@]}; i++ ))
         # otb cooccurence matrix images
         OTBBASEIMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_OTB
         # otb should write haralick image last...
-        if [[ ! -f ${OTBBASEIMAGE}HaralickCorrelation_${RADII[$j]}.${OUTPUT_SUFFIX} ]];
+        if [[ (! -f ${OTBBASEIMAGE}HaralickCorrelation_${RADII[$j]}.${OUTPUT_SUFFIX}) && ${ENABLEOTB} -eq 1 ]];
           then
             logCmd ${ANTSPATH}/otbScalarImageToTexturesFilter ${RESCALED_IMAGES[$i]} $OTBBASEIMAGE 20 ${RADII[$j]}
             logCmd c3d ${OTBBASEIMAGE}ClusterProminence_${RADII[$j]}.nii.gz       -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}ClusterProminence_${RADII[$j]}.png
