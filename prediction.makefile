@@ -10,14 +10,19 @@ ANTSIMAGEMATHCMD=$(ANTSPATH)/ImageMath
 PNGSLICE=python $(SCRIPTSPATH)/viewsoln.py --labelfile=$(SCRIPTSPATH)/dfltlabels.txt 
 RFMODEL=FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel
 
+TESTCASES := Predict1000/before Predict1001/before Predict1002/before
 # new cases automagically added
-SUBDIRS := $(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut -d'/' -f 2-)
+SUBDIRS := $(TESTCASES)
+SUBDIRS := $(filter-out $(TESTCASES),$(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut -d'/' -f 2-) )
  
 .SECONDARY: $(addsuffix /Mask.centroid.txt,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  \
             $(addsuffix /FullImageList.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 gmmfeature: $(addsuffix /$(RFMODEL)/LABELS.RFGMM.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 png: $(addsuffix /Truth.png,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 predictors: $(addsuffix /TopPredictors.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+
+echo:
+	@echo $(SUBDIRS)
 
 # create tex file for viewing
 tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS))) 
