@@ -13,7 +13,7 @@ RFMODEL=FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.
 RUNOTB=1
 RUNOTB=0
 
-TESTCASES := Predict1000/before Predict1001/before Predict1002/before
+TESTCASES := Predict1000/before Predict1001/before Predict1002/01012000
 # new cases automagically added
 SUBDIRS := $(TESTCASES)
 SUBDIRS := $(filter-out $(TESTCASES),$(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut -d'/' -f 2-) )
