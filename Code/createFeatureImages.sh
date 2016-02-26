@@ -129,6 +129,7 @@ DIMENSION=3
 ANATOMICAL_IMAGES=()
 NORMALIZED_IMAGES=()
 RESCALED_IMAGES=()
+RAWIMAGES_IMAGES=()
 SYMMETRIC_TEMPLATE=()
 SYMMETRIC_TEMPLATE_MASK=""
 CLUSTER_CENTERS=()
@@ -339,6 +340,7 @@ for (( i = 0; i < ${#ANATOMICAL_IMAGES[@]}; i++ ))
 
     NORMALIZED_IMAGES[${#NORMALIZED_IMAGES[@]}]=$OUTPUT_IMAGE
     RESCALED_IMAGES[${#RESCALED_IMAGES[@]}]=$RESCALE_IMAGE
+    RAWIMAGES_IMAGES[${#RAWIMAGES_IMAGES[@]}]=$RAWIMAGE_IMAGE
     if [[ ! -f ${OUTPUT_IMAGE} ]];
       then
         logCmd ${ANTSPATH}ImageMath 3 $RAWIMAGE_IMAGE TruncateImageIntensity ${ANATOMICAL_IMAGES[$i]} 0.01 0.99 200
@@ -490,7 +492,7 @@ for (( i = 0; i < ${#NORMALIZED_IMAGES[@]}; i++ ))
         OUTPUT_IMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ENTROPY_RADIUS_${RADII[$j]}.${OUTPUT_SUFFIX}
         if [[ ! -f ${OUTPUT_IMAGE} ]];
           then
-            logCmd ${ANTSPATH}/ImageMath ${DIMENSION} $OUTPUT_IMAGE NeighborhoodStats ${RESCALED_IMAGES[$i]} 7 ${RADII[$j]}
+            logCmd ${ANTSPATH}/ImageMath ${DIMENSION} $OUTPUT_IMAGE NeighborhoodStats ${RAWIMAGES_IMAGES[$i]} 7 ${RADII[$j]}
           fi
         # create png
         PNG_IMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ENTROPY_RADIUS_${RADII[$j]}.png
