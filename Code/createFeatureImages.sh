@@ -122,7 +122,7 @@ CURRENT_DIR=`pwd`/
 OUTPUT_DIR=${CURRENT_DIR}/tmp$RANDOM/
 OUTPUT_PREFIX=${OUTPUT_DIR}/tmp
 OUTPUT_SUFFIX="nii.gz"
-LABELFILE=/workarea/fuentes/github/RandomForestHCCResponse/Code/dfltlabels.txt
+LABELFILE=Code/dfltlabels.txt
 
 DIMENSION=3
 
@@ -274,7 +274,7 @@ echo OTB $ENABLEOTB
 #PNG_IMAGE=${OUTPUT_PREFIX}MASKERODE.png
 #if [[ ! -f ${PNG_IMAGE} ]];
 #  then
-#    logCmd c3d $OUTPUT_IMAGE -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc $PNG_IMAGE
+#    logCmd c3d $OUTPUT_IMAGE -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc $PNG_IMAGE
 #  fi
 
 
@@ -480,24 +480,23 @@ for (( i = 0; i < ${#NORMALIZED_IMAGES[@]}; i++ ))
             logCmd ${ANTSPATH}/ImageMath ${DIMENSION} $OUTPUT_IMAGE NeighborhoodStats ${NORMALIZED_IMAGES[$i]} 5 ${RADII[$j]}
           fi
         # create png
-        PNG_IMAGE=
         PNG_IMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_SKEWNESS_RADIUS_${RADII[$j]}.png
         if [[ ! -f ${PNG_IMAGE} ]];
           then
-                logCmd c3d $OUTPUT_IMAGE -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc $PNG_IMAGE
+                logCmd c3d $OUTPUT_IMAGE -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc $PNG_IMAGE
           fi
 
         # entropy image
         OUTPUT_IMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ENTROPY_RADIUS_${RADII[$j]}.${OUTPUT_SUFFIX}
         if [[ ! -f ${OUTPUT_IMAGE} ]];
           then
-            logCmd ${ANTSPATH}/ImageMath ${DIMENSION} $OUTPUT_IMAGE NeighborhoodStats ${NORMALIZED_IMAGES[$i]} 7 ${RADII[$j]}
+            logCmd ${ANTSPATH}/ImageMath ${DIMENSION} $OUTPUT_IMAGE NeighborhoodStats ${RESCALED_IMAGES[$i]} 7 ${RADII[$j]}
           fi
         # create png
         PNG_IMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ENTROPY_RADIUS_${RADII[$j]}.png
         if [[ ! -f ${PNG_IMAGE} ]];
           then
-             logCmd c3d $OUTPUT_IMAGE -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc $PNG_IMAGE
+             logCmd c3d $OUTPUT_IMAGE -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc $PNG_IMAGE
           fi
 
         ## TODO - otb taking too long...
@@ -507,14 +506,19 @@ for (( i = 0; i < ${#NORMALIZED_IMAGES[@]}; i++ ))
         if [[ (! -f ${OTBBASEIMAGE}HaralickCorrelation_${RADII[$j]}.${OUTPUT_SUFFIX}) && ${ENABLEOTB} -eq 1 ]];
           then
             logCmd ${ANTSPATH}/otbScalarImageToTexturesFilter ${RESCALED_IMAGES[$i]} $OTBBASEIMAGE 20 ${RADII[$j]}
-            logCmd c3d ${OTBBASEIMAGE}ClusterProminence_${RADII[$j]}.nii.gz       -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}ClusterProminence_${RADII[$j]}.png
-            logCmd c3d ${OTBBASEIMAGE}Energy_${RADII[$j]}.nii.gz                  -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}Energy_${RADII[$j]}.png
-            logCmd c3d ${OTBBASEIMAGE}Inertia_${RADII[$j]}.nii.gz                 -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}Inertia_${RADII[$j]}.png
-            logCmd c3d ${OTBBASEIMAGE}ClusterShade_${RADII[$j]}.nii.gz            -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}ClusterShade_${RADII[$j]}.png
-            logCmd c3d ${OTBBASEIMAGE}Entropy_${RADII[$j]}.nii.gz                 -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}Entropy_${RADII[$j]}.png
-            logCmd c3d ${OTBBASEIMAGE}InverseDifferenceMoment_${RADII[$j]}.nii.gz -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}InverseDifferenceMoment_${RADII[$j]}.png
-            logCmd c3d ${OTBBASEIMAGE}Correlation_${RADII[$j]}.nii.gz             -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}Correlation_${RADII[$j]}.png
-            logCmd c3d ${OTBBASEIMAGE}HaralickCorrelation_${RADII[$j]}.nii.gz     -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OTBBASEIMAGE}HaralickCorrelation_${RADII[$j]}.png
+          fi
+        # create png
+        PNG_IMAGE=${OTBBASEIMAGE}HaralickCorrelation_${RADII[$j]}.png
+        if [[ ! -f ${PNG_IMAGE} && ${ENABLEOTB} -eq 1 ]];
+          then
+            logCmd c3d ${OTBBASEIMAGE}ClusterProminence_${RADII[$j]}.nii.gz       -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OTBBASEIMAGE}ClusterProminence_${RADII[$j]}.png
+            logCmd c3d ${OTBBASEIMAGE}Energy_${RADII[$j]}.nii.gz                  -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OTBBASEIMAGE}Energy_${RADII[$j]}.png
+            logCmd c3d ${OTBBASEIMAGE}Inertia_${RADII[$j]}.nii.gz                 -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OTBBASEIMAGE}Inertia_${RADII[$j]}.png
+            logCmd c3d ${OTBBASEIMAGE}ClusterShade_${RADII[$j]}.nii.gz            -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OTBBASEIMAGE}ClusterShade_${RADII[$j]}.png
+            logCmd c3d ${OTBBASEIMAGE}Entropy_${RADII[$j]}.nii.gz                 -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OTBBASEIMAGE}Entropy_${RADII[$j]}.png
+            logCmd c3d ${OTBBASEIMAGE}InverseDifferenceMoment_${RADII[$j]}.nii.gz -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OTBBASEIMAGE}InverseDifferenceMoment_${RADII[$j]}.png
+            logCmd c3d ${OTBBASEIMAGE}Correlation_${RADII[$j]}.nii.gz             -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OTBBASEIMAGE}Correlation_${RADII[$j]}.png
+            logCmd c3d ${OTBBASEIMAGE}HaralickCorrelation_${RADII[$j]}.nii.gz     -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OTBBASEIMAGE}HaralickCorrelation_${RADII[$j]}.png
           fi
 
       done
@@ -537,7 +541,7 @@ if [[ ! -f ${OUTPUT_DISTANCE_IMAGE} ]];
 PNG_IMAGE=${OUTPUT_PREFIX}NORMALIZED_DISTANCE.png
 if [[ ! -f ${PNG_IMAGE} ]];
   then
-    logCmd c3d $OUTPUT_DISTANCE_IMAGE -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc $PNG_IMAGE
+    logCmd c3d $OUTPUT_DISTANCE_IMAGE -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc $PNG_IMAGE
   fi
 
 
@@ -752,11 +756,11 @@ for (( i = 0; i < ${#NORMALIZED_IMAGES[@]}; i++ ))
             # display segmentation
             logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM.${OUTPUT_SUFFIX}                              -slice z $CENTROIDSLICE -dup -oli ${LABELFILE} 1.0   -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM.png
             # display images
-            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_VOLUME_TO_SURFACE_AREA_RATIO.${OUTPUT_SUFFIX} -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_VOLUME_TO_SURFACE_AREA_RATIO.png
-            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_PHYSICAL_VOLUME.${OUTPUT_SUFFIX}              -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_PHYSICAL_VOLUME.png
-            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_ECCENTRICITY.${OUTPUT_SUFFIX}                 -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_ECCENTRICITY.png
-            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_ELONGATION.${OUTPUT_SUFFIX}                   -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_ELONGATION.png
-            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_CANNY.${OUTPUT_SUFFIX}                        -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc $PNG_IMAGE
+            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_VOLUME_TO_SURFACE_AREA_RATIO.${OUTPUT_SUFFIX} -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_VOLUME_TO_SURFACE_AREA_RATIO.png
+            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_PHYSICAL_VOLUME.${OUTPUT_SUFFIX}              -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_PHYSICAL_VOLUME.png
+            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_ECCENTRICITY.${OUTPUT_SUFFIX}                 -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_ECCENTRICITY.png
+            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_ELONGATION.${OUTPUT_SUFFIX}                   -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_ELONGATION.png
+            logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_CANNY.${OUTPUT_SUFFIX}                        -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc $PNG_IMAGE
           fi
 
         for (( j = 1; j <= ${NUMBER_OF_LABELS}; j++ ))
@@ -766,7 +770,7 @@ for (( i = 0; i < ${#NORMALIZED_IMAGES[@]}; i++ ))
             PNG_IMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_POSTERIORS$j.png
             if [[ ! -f ${PNG_IMAGE} ]];
               then
-                 logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_POSTERIORS$j.${OUTPUT_SUFFIX}                 -slice z $CENTROIDSLICE -clip 0 inf  -color-map grey -type uchar -omc $PNG_IMAGE
+                 logCmd c3d ${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_ATROPOS_GMM_POSTERIORS$j.${OUTPUT_SUFFIX}                 -slice z $CENTROIDSLICE -clip 2% 98%  -color-map grey -type uchar -omc $PNG_IMAGE
               fi
 
           done
