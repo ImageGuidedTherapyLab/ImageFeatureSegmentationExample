@@ -479,7 +479,7 @@ for (( i = 0; i < ${#NORMALIZED_IMAGES[@]}; i++ ))
         OUTPUT_IMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_SKEWNESS_RADIUS_${RADII[$j]}.${OUTPUT_SUFFIX}
         if [[ ! -f ${OUTPUT_IMAGE} ]];
           then
-            logCmd ${ANTSPATH}/ImageMath ${DIMENSION} $OUTPUT_IMAGE NeighborhoodStats ${NORMALIZED_IMAGES[$i]} 5 ${RADII[$j]}
+            logCmd ${ANTSPATH}/ImageMath ${DIMENSION} $OUTPUT_IMAGE NeighborhoodStats ${RAWIMAGES_IMAGES[$i]} 5 ${RADII[$j]}
           fi
         # create png
         PNG_IMAGE=${OUTPUT_PREFIX}${IMAGE_NAMES[$i]}_SKEWNESS_RADIUS_${RADII[$j]}.png
