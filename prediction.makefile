@@ -10,8 +10,8 @@ ANTSIMAGEMATHCMD=$(ANTSPATH)/ImageMath
 PNGSLICE=python $(SCRIPTSPATH)/viewsoln.py --labelfile=$(SCRIPTSPATH)/dfltlabels.txt 
 RFMODEL=FeatureModel00000130/KFold.0000000000000011111111111111111110.prior.GMM.RFModel
 # control texture features
-RUNOTB=1
 RUNOTB=0
+RUNOTB=1
 
 TESTCASES := Predict1000/before Predict1001/before Predict1002/01012000
 # new cases automagically added
@@ -29,6 +29,10 @@ echo:
 
 # create tex file for viewing
 tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS))) 
+
+visualizeData.pdf:
+	echo  $(foreach idim,$(addsuffix /ImageData.Rdata,$(addprefix $(WORKDIR)/,$(SUBDIRS))), "$(idim)") |  sed "s/\s\+/,/g" >  $(basename $@).csv
+	#Rscript Code/visualizeData.R $(basename $@).csv
 
 summary.pdf: tex
 	pdftk `ls workdir/*/*/*.pdf | sort -V` cat output  summary.pdf
@@ -139,6 +143,7 @@ $(WORKDIR)/%/FullImageList.csv: $(DATADIR)/%/Mask.nii.gz
 # create csv file of top image predictors
 $(WORKDIR)/%/TopPredictors.csv: $(WORKDIR)/%/FullImageList.csv
 	Rscript Code/imageStatistics.R 3 $< $(@D)
+
 
 #run mixture model to segment the image
 #https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
