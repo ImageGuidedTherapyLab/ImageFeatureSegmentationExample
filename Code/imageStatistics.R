@@ -58,7 +58,7 @@ mask <- as.array( maskImage )
 maskIndices <- which( mask != 0 )
 
 ## load feature images
-if( as.numeric(length( maskIndices ))*as.numeric(length( featureNames )) * 8. /1.e9 > 50.)
+if( as.numeric(length( maskIndices ))*as.numeric(length( featureNames )) * 8. /1.e9 > 25.)
   {
   print( paste("matrix",length( maskIndices ),"x",length( featureNames ) , "too large...",sep=" "))
   stopQuietly()

@@ -16,7 +16,11 @@ RUNOTB=1
 TESTCASES := Predict1000/before Predict1001/before Predict1002/01012000
 # new cases automagically added
 SUBDIRS := $(TESTCASES)
+# look at all directories  of the for MRN/date
 SUBDIRS := $(filter-out $(TESTCASES),$(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut -d'/' -f 2-) )
+# only look at directories with Truth.nii.gz
+SUBDIRS := $(filter-out $(TESTCASES),$(shell ls ImageDatabase/*/*/Truth.nii.gz | cut -d'/' -f 2-3) )
+
 IMAGEDATA:= $(addsuffix /ImageData.Rdata,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  
  
 .SECONDARY: $(addsuffix /Mask.centroid.txt,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  \
