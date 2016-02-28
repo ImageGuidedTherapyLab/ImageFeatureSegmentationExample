@@ -15,6 +15,8 @@ args <- commandArgs( trailingOnly = TRUE )
 #args <- c( "3","workdir/Predict1002/01012000/FullImageList.csv","workdir/Predict1002/01012000")
 #args <- c( "3","workdir/882371/06032015/FullImageList.csv","workdir/882371/06032015")
 #args <- c( "3","workdir/Predict0001/before/FullImageList.csv","workdir/Predict0001/before")
+#args <- c( "3","workdir/Predict0008/before/FullImageList.csv","workdir/Predict0008/before")
+#args <- c( "3","workdir/Predict0002/before/FullImageList.csv","workdir/Predict0002/before")
  
 
 

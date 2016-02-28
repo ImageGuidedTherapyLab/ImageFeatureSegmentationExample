@@ -33,10 +33,11 @@ echo:
 # create tex file for viewing
 tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS))) 
 
-$(WORKDIR)/visualizeData.pdf: tex
-	echo  $(IMAGEDATA) |  sed "s/\s\+/,/g" >  $(basename $@).csv
-	#Rscript Code/visualizeData.R $(basename $@).csv
-	pdftk `ls workdir/*/*/ViewProcessed.pdf | sort -V` cat output  summary.pdf
+summary.pdf: tex
+	echo  $(IMAGEDATA) |  sed "s/\s\+/,/g" >  $(WORKDIR)/visualizeData.csv
+	Rscript Code/visualizeData.R $(WORKDIR)
+	pdflatex ViewSummary.tex
+	pdftk ViewSummary.pdf `ls workdir/*/*/ViewProcessed.pdf | sort -V` cat output  summary.pdf
 
 CONTRAST = Pre Art Ven Del
 FEATURES = RAWIMAGE                                    \
@@ -118,8 +119,8 @@ $(WORKDIR)/%/Truth.png: $(WORKDIR)/%/Mask.centroid.txt
 
 # create csv file of image list
 $(WORKDIR)/%/FullImageList.csv: $(WORKDIR)/%/Mask.nii.gz 
-	echo  "DATAID" "MASK"     "TRUTH"                   "NORMALIZED_DISTANCE"       $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),               "$(idim)_$(idft)"       ))|  sed "s/\s\+/,/g" >  $@
-	echo   "$*" "$<" "$(<D)/Truth.nii.gz"  $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES), "$(WORKDIR)/$*/$(idim)_$(idft).nii.gz"))|  sed "s/\s\+/,/g" >> $@
+	echo  "DATAID" "MASK"          "TRUTH"                      "NORMALIZED_DISTANCE"       $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),               "$(idim)_$(idft)"       ))|  sed "s/\s\+/,/g" >  $@
+	echo   "$*" "$<" "$(DATADIR)/$*/Truth.nii.gz"  $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES), "$(WORKDIR)/$*/$(idim)_$(idft).nii.gz"))|  sed "s/\s\+/,/g" >> $@
 
 # create csv file of top image predictors
 $(WORKDIR)/%/ImageData.Rdata $(WORKDIR)/%/TopPredictors.csv: $(WORKDIR)/%/FullImageList.csv
