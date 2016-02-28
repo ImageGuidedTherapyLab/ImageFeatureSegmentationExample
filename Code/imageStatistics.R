@@ -13,8 +13,8 @@ stopQuietly <- function(...)
 args <- commandArgs( trailingOnly = TRUE )
 #args <- c( "3","./workdir/Predict1001/before/FullImageList.csv","./workdir/Predict1001/before/")
 #args <- c( "3","workdir/Predict1002/01012000/FullImageList.csv","workdir/Predict1002/01012000")
-#args <- c( "3","workdir/Predict1001/before/FullImageList.csv","workdir/Predict1001/before")
 #args <- c( "3","workdir/882371/06032015/FullImageList.csv","workdir/882371/06032015")
+#args <- c( "3","workdir/Predict0001/before/FullImageList.csv","workdir/Predict0001/before")
  
 
 
@@ -43,9 +43,10 @@ outputDataCSVFile  = paste( outputDataFileBase, "/TopPredictors.csv", sep = "")
 #
 ###############################################
 
-maskName      <- fileList[1,1]
-truthName     <- fileList[1,2]
-featureImages <- fileList[1,3:ncol( fileList )]
+dataid        <- fileList[1,1]
+maskName      <- fileList[1,2]
+truthName     <- fileList[1,3]
+featureImages <- fileList[1,4:ncol( fileList )]
 featureNames  <- colnames( featureImages )
 
 ## read mask
@@ -61,7 +62,7 @@ if( as.numeric(length( maskIndices ))*as.numeric(length( featureNames )) * 8. /1
   stopQuietly()
   }
 
-subjectData <- matrix( NA, nrow = length( maskIndices ), ncol = length( featureNames )+1 )
+subjectData <- matrix( NA, nrow = length( maskIndices ), ncol = length( featureNames )+2 )
 for( j in 1:length( featureNames ) )
   {
   cat( "  Reading feature image ", featureNames[j], ".\n", sep = "" )
@@ -76,7 +77,7 @@ truthImage <- as.array( antsImageRead( as.character( truthName ), dimension = di
 uniqueTruthLabels <- sort( unique( truthImage[maskIndices] ) )
 cat( "Unique truth labels: ", uniqueTruthLabels, "\n", sep = " " )
 subjectData[, length( featureNames )+1] <- truthImage[maskIndices]
-colnames( subjectData ) <- c( featureNames, "Labels" )
+colnames( subjectData ) <- c( featureNames, "Labels", "DataID" )
 
 # If the subject data has NA's, we need to get rid of them
 # since predict.randomForest will return NA's otherwise.
@@ -87,6 +88,7 @@ subjectData[is.na( subjectData )] <- 0
 print( "formatting ...  ")
 subjectData        <- as.data.frame( subjectData )
 subjectData$Labels <- as.factor(     subjectData$Labels )
+subjectData$DataID <- rep( dataid , length( maskIndices ) )
 print(head(subjectData,n=10))
 
 # FIXME filter zero's

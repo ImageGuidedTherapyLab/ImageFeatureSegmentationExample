@@ -17,8 +17,11 @@ TESTCASES := Predict1000/before Predict1001/before Predict1002/01012000
 # new cases automagically added
 SUBDIRS := $(TESTCASES)
 SUBDIRS := $(filter-out $(TESTCASES),$(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut -d'/' -f 2-) )
+IMAGEDATA:= $(addsuffix /ImageData.Rdata,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  
  
 .SECONDARY: $(addsuffix /Mask.centroid.txt,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  \
+            $(addsuffix /Mask.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  \
+            $(IMAGEDATA)  \
             $(addsuffix /FullImageList.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 gmmfeature: $(addsuffix /$(RFMODEL)/LABELS.RFGMM.nii.gz,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 png: $(addsuffix /Truth.png,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
@@ -30,12 +33,10 @@ echo:
 # create tex file for viewing
 tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS))) 
 
-visualizeData.pdf:
-	echo  $(foreach idim,$(addsuffix /ImageData.Rdata,$(addprefix $(WORKDIR)/,$(SUBDIRS))), "$(idim)") |  sed "s/\s\+/,/g" >  $(basename $@).csv
+$(WORKDIR)/visualizeData.pdf: tex
+	echo  $(IMAGEDATA) |  sed "s/\s\+/,/g" >  $(basename $@).csv
 	#Rscript Code/visualizeData.R $(basename $@).csv
-
-summary.pdf: tex
-	pdftk `ls workdir/*/*/*.pdf | sort -V` cat output  summary.pdf
+	pdftk `ls workdir/*/*/ViewProcessed.pdf | sort -V` cat output  summary.pdf
 
 CONTRAST = Pre Art Ven Del
 FEATURES = RAWIMAGE                                    \
@@ -99,49 +100,29 @@ csv:
 	counter=0 ; for idfile in  $(WORKDIR)/*/*/*.lstat.csv ; do  if [[ $$counter -eq 0 ]] ;then cat $$idfile; else sed '1d' $$idfile; fi; counter=$$((counter+1)) ;done > DataSummary.csv
  
 
-# TODO
-#segmentation: $(addsuffix /$(RFMODEL)/LABELS.GMM.nii.gz,$(addprefix $(WORKDIR)/,$(PREDICTLIST)))
-#volume: $(addsuffix /$(RFMODEL)/LABELS.GMM.VolStat.csv,$(addprefix $(WORKDIR)/,$(PREDICTLIST)))
-#png: $(addsuffix /$(RFMODEL)/LABELS.GMM.png,$(addprefix $(WORKDIR)/,$(PREDICTLIST)))
-
-# $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.png: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.gz
-# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Pre.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Art.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Ven.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Del.nii.gz  --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=$(DATADIR)/$*/Mask.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-# 	cd $(WORKDIR)/$*/$(RFMODEL); $(PNGSLICE) --rfimage=./LABELS.GMM.nii.gz --maskimage=$(DATADIR)/$*/Mask.nii.gz --truthimage=LABELS.GMM.nii.gz
-# 
-# $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.VolStat.csv: $(WORKDIR)/%/$(RFMODEL)/LABELS.GMM.nii.gz
-# 	echo vglrun itksnap -g $(DATADIR)/$*/Art.nii.gz -s $(DATADIR)/$*/Truth.nii.gz
-# 	cd $(WORKDIR)/$*/$(RFMODEL); c3d LABELS.GMM.nii.gz LABELS.GMM.nii.gz -lstat > LABELS.GMM.VolStat.txt ; sed "s/\s\+/,/g" LABELS.GMM.VolStat.txt > LABELS.GMM.VolStat.csv 
-# 
-
 
 # create csv file of top image predictors
-$(WORKDIR)/%/ViewProcessed.pdf: $(WORKDIR)/%/TopPredictors.csv
-	echo "\\IfFileExists{$(WORKDIR)/$*/TopPredictors.csv}{\\verbatiminput{$(WORKDIR)/$*/TopPredictors.csv}}{predictors not found}\\viewdata{$(WORKDIR)/$*/}{Pre}\\viewdata{$(WORKDIR)/$*/}{Art}\\viewdata{$(WORKDIR)/$*/}{Ven}\\viewdata{$(WORKDIR)/$*/}{Del}" | sort -V > DoNotCOMMIT.tex; pdflatex -output-directory $(WORKDIR)/$*/ ViewProcessed.tex 
+$(WORKDIR)/%/ViewProcessed.pdf: $(WORKDIR)/%/ImageData.Rdata
+	echo "\\IfFileExists{$(WORKDIR)/$*/TopPredictors.csv}{\\verbatiminput{$(WORKDIR)/$*/TopPredictors.csv}}{predictors not found}\\viewdata{$(WORKDIR)/$*/}{Pre}\\viewdata{$(WORKDIR)/$*/}{Art}\\viewdata{$(WORKDIR)/$*/}{Ven}\\viewdata{$(WORKDIR)/$*/}{Del}" | sort -V > $(@D)/DoNotCOMMIT.tex; pdflatex -output-directory $(WORKDIR)/$*/ ViewProcessed.tex 
 
 # create mask from truth image if does not exist
-$(DATADIR)/%/Mask.nii.gz: $(DATADIR)/%/Truth.nii.gz
-	mkdir -p $(WORKDIR)/$*
-	$(C3DEXE) $<  -binarize  -o $@
-
+# get image centroid for plotting
+$(WORKDIR)/%/Mask.nii.gz $(WORKDIR)/%/Mask.centroid.txt: 
+	mkdir -p $(WORKDIR)/$* 
+	if [[ -f $(DATADIR)/$*/Mask.nii.gz ]]; then echo "using Mask.nii.gz" ; cp $(DATADIR)/$*/Mask.nii.gz $(WORKDIR)/$*/Mask.nii.gz; elif [[ -f $(DATADIR)/$*/Truth.nii.gz ]]; then echo "using Truth.nii.gz" ; $(C3DEXE) $(DATADIR)/$*/Truth.nii.gz  -binarize  -o $(WORKDIR)/$*/Mask.nii.gz; else echo "NEED MASK" ;fi
+	python Code/slicecentroid.py --imagedir=$(DATADIR)/$* > $(WORKDIR)/$*/Mask.centroid.txt
+	
 $(WORKDIR)/%/Truth.png: $(WORKDIR)/%/Mask.centroid.txt
 	-c3d $(DATADIR)/$*/Truth.nii.gz -slice z `cat $<` -dup -oli Code/dfltlabels.txt 1.0   -type uchar -omc $(WORKDIR)/$*/Truth.png
 
-# get image centroid for plotting
-$(WORKDIR)/%/Mask.centroid.txt : $(DATADIR)/%/Mask.nii.gz 
-	mkdir -p $(WORKDIR)/$*
-	python Code/slicecentroid.py --imagefile=$< > $@
 
 # create csv file of image list
-$(WORKDIR)/%/FullImageList.csv: $(DATADIR)/%/Mask.nii.gz 
-	echo  "MASK"     "TRUTH"                      "NORMALIZED_DISTANCE"       $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),               "$(idim)_$(idft)"       ))|  sed "s/\s\+/,/g" >  $@
-	echo  "$<" "$(<D)/Truth.nii.gz"  $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES), "$(WORKDIR)/$*/$(idim)_$(idft).nii.gz"))|  sed "s/\s\+/,/g" >> $@
+$(WORKDIR)/%/FullImageList.csv: $(WORKDIR)/%/Mask.nii.gz 
+	echo  "DATAID" "MASK"     "TRUTH"                   "NORMALIZED_DISTANCE"       $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES),               "$(idim)_$(idft)"       ))|  sed "s/\s\+/,/g" >  $@
+	echo   "$*" "$<" "$(<D)/Truth.nii.gz"  $(WORKDIR)/$*/NORMALIZED_DISTANCE.nii.gz $(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES), "$(WORKDIR)/$*/$(idim)_$(idft).nii.gz"))|  sed "s/\s\+/,/g" >> $@
 
 # create csv file of top image predictors
-$(WORKDIR)/%/TopPredictors.csv: $(WORKDIR)/%/FullImageList.csv
+$(WORKDIR)/%/ImageData.Rdata $(WORKDIR)/%/TopPredictors.csv: $(WORKDIR)/%/FullImageList.csv
 	Rscript Code/imageStatistics.R 3 $< $(@D)
 
 
