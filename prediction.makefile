@@ -105,6 +105,9 @@ csv:
 	counter=0 ; for idfile in  $(WORKDIR)/*/*/*.lstat.csv ; do  if [[ $$counter -eq 0 ]] ;then cat $$idfile; else sed '1d' $$idfile; fi; counter=$$((counter+1)) ;done > DataSummary.csv
  
 
+# make -f prediction.makefile   qa  > qa.txt 2>&1
+qa:
+	@$(foreach iddir,$(SUBDIRS),  echo c3d $(DATADIR)/$(iddir)/Ven.nii.gz $(DATADIR)/$(iddir)/Truth.nii.gz -lstat; c3d $(DATADIR)/$(iddir)/Ven.nii.gz $(DATADIR)/$(iddir)/Truth.nii.gz -lstat; ) 
 
 # create csv file of top image predictors
 $(WORKDIR)/%/ViewProcessed.pdf: $(WORKDIR)/%/ImageData.Rdata
