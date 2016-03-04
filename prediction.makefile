@@ -37,6 +37,18 @@ echo:
 # create tex file for viewing
 tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS))) 
 
+references.bbl:
+# generate bbl file for use w/ \input commmand
+%.bbl: %.bib
+	pdflatex -jobname tmp$*         \
+           \\documentclass{article}     \
+           \\begin{document}            \
+           \\bibliographystyle{plain}   \
+           \\bibliography{$*}           \
+           \\nocite{*}                  \
+           \\end{document}
+	bibtex tmp$*
+
 summary.pdf: tex
 	echo  $(IMAGEDATA) |  sed "s/\s\+/,/g" >  $(WORKDIR)/visualizeData.csv
 	Rscript Code/visualizeData.R $(WORKDIR)
