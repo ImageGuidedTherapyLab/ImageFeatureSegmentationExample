@@ -21,6 +21,9 @@ SUBDIRS := $(filter-out $(TESTCASES),$(shell find ImageDatabase/ -mindepth 2 -li
 # only look at directories with Truth.nii.gz
 SUBDIRS := $(filter-out $(TESTCASES),$(shell ls ImageDatabase/*/*/Truth.nii.gz | cut -d'/' -f 2-3) )
 
+# FIXME - hack manual job list
+include /rsrch1/ip/dtfuentes/FullRepo/DIP/data/mdacc/queries/mrnlists/joblistmelanoma
+
 IMAGEDATA:= $(addsuffix /ImageData.Rdata,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  
  
 .SECONDARY: $(addsuffix /Mask.centroid.txt,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  \
@@ -33,6 +36,7 @@ predictors: $(addsuffix /TopPredictors.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 
 echo:
 	@echo $(SUBDIRS)
+	@for iddir in $(SUBDIRS); do echo ImageDatabase/$$iddir; ls ImageDatabase/$$iddir ;  done
 
 # create tex file for viewing
 tex:  png $(addsuffix /ViewProcessed.pdf,$(addprefix $(WORKDIR)/,$(SUBDIRS))) 

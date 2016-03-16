@@ -97,7 +97,8 @@ Received: date / Accepted: date
 
 \begin{itemize}
   \item Hypothesis: Volumetric RECIST\cite{tacher2015comparison} provides
-more reliable response to therapy than RECIST 1.x \begin{itemize}
+more reliable response to therapy than RECIST 1.x 
+    \begin{itemize}
       \item 'more reliable' = earlier response ?
       \item 'more reliable' = more accurate ?  
       \item How do we quantify this ?
@@ -105,13 +106,53 @@ more reliable response to therapy than RECIST 1.x \begin{itemize}
 \end{itemize}
 
 \begin{figure}[h]
-  \IfFileExists{workdir/StatSummary.pdf}{\includegraphics[width=.8\textwidth]{workdir/StatSummary.pdf}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
-  \IfFileExists{workdir/TopPredictors.csv}{\verbatiminput{workdir/TopPredictors.csv}}{predictors not found}
-   \caption{Group Summary}\label{fig:GroupSummary}
+\begin{minipage}{0.7\textwidth}
+\includegraphics[width=1\textwidth]{\picdir/timeline.png} \\
+\includegraphics[width=1\textwidth]{\picdir/Kaplan.png}
+\end{minipage}~\begin{minipage}{0.39\textwidth}
+\includegraphics[width=1\textwidth]{\picdir/ResponseCriteria.png}
+\end{minipage}
+\caption{Typical treatment timeline, Response Criteria, and 
+Kaplan-Meier Analysis~\cite{tacher2015comparison}. KM analysis
+demonstrates that volumes statistically stratify `responders'
+from `non-responders'.
+}\label{Fig:Kaplan}
 \end{figure}
-        
-\begin{thebibliography}{1}
 
+
+\begin{itemize}
+  \item {\color{red} How do we show impact on patient care? }
+   How do we show that early identification of non-response 
+   will improve disease-specific outcomes and most important, patient outcomes?
+  \item All volumes are generated from segmentations.
+        What is convincing evidence that segmentations are accurate?  Comparison to pathology?
+\end{itemize}
+
+
+\clearpage
+\pagebreak
+
+\begin{itemize}
+  \item Key Personnel to streamline workflow
+    \begin{itemize}
+     \item database programmer: build rules for automated data retrieval (???)
+     \item research assistant: data curation of survival times and imaging qa (MD)
+     \item research programmer: data analysis (PhD)
+     \item statistician: (auston)
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}[h]
+\includegraphics[width=1\textwidth]{\picdir/ManualAuto}
+\caption{
+  Step 1. Show this with manual segmentations to demonstrate an impact.
+  Step 2. Investigate if image features also stratify a survival difference.
+  Step 3. Automate the segmentation process to improve throughput.
+}\label{Fig:ManualAuto}
+\end{figure}
+
+
+\begin{thebibliography}{1}
 \bibitem{tacher2015comparison}
 Vania Tacher, MingDe Lin, Rafael Duran, Hooman Yarmohammadi, Howard Lee,
 Julius
@@ -125,7 +166,20 @@ using a
 
 \end{thebibliography}
 
+\clearpage
 \pagebreak
+
+
+\begin{figure}[h]
+  \IfFileExists{workdir/StatSummary.pdf}{\includegraphics[width=.8\textwidth]{workdir/StatSummary.pdf}  }{\fbox{\begin{picture}(10,10)\put(0,5){ not found } \end{picture}}}
+  \IfFileExists{workdir/TopPredictors.csv}{\verbatiminput{workdir/TopPredictors.csv}}{predictors not found}
+   \caption{Group Summary}\label{fig:GroupSummary}
+\end{figure}
+        
+
+\clearpage
+\pagebreak
+
 \section{Usage}
 \begin{figure}[h]
 \includegraphics[width=1\textwidth]{\picdir/DataFlow.png}
