@@ -134,16 +134,16 @@ elif (options.builddb):
   # organize distinct image features column wise
   featureselectstring = ""
   for featureid in featurenames:
-       featureselectstring = featureselectstring + "group_concat( CASE WHEN ls1.FeatureID='%s' THEN ls1.Mean END) as 'TimeOne%s', group_concat( CASE WHEN ls2.FeatureID='%s' THEN ls2.Mean END) as 'TimeTwo%s'," %(featureid ,featureid,featureid,featureid )
+       featureselectstring = featureselectstring + "group_concat( CASE WHEN ls1.FeatureID='%s' THEN ls1.Mean END) as 'Baseline%s', group_concat( CASE WHEN ls2.FeatureID='%s' THEN ls2.Mean END) as 'Followup%s'," %(featureid ,featureid,featureid,featureid )
 
   # query data
   dataquery ="""
   select ls1.Dataid, ls1.labelid,
-         ls1.time as TimeOne,ls2.time as TimeTwo,  
-         (julianday(ls2.time)-julianday(ls1.time)) as TimeToEvent, oc.Status,
+         ls1.time as Baseline,ls2.time as Followup,  
          %s
-         ls1.Volume as VolumeOne, ls2.Volume as VolumeTwo,
-         ls2.Volume - ls1.Volume as VolDiff
+         ls1.Volume as VolumeBaseline, ls2.Volume as VolumeFollowup,
+         ls2.Volume - ls1.Volume as VolDiff,
+         (julianday(ls2.time)-julianday(ls1.time)) as TimeToEvent, oc.Status
   from lstat   ls1
   join lstat   ls2 on ls1.Dataid=ls2.dataid and ls1.FeatureID=ls2.FeatureID and ls1.labelid=ls2.labelid
   join outcome oc  on oc.Dataid=ls1.dataid 
