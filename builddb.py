@@ -103,22 +103,24 @@ elif (options.builddb):
   # commit all updates
   tagsconn.commit()
 
-   
+  # query data
   dataquery ="""
   select ls1.Dataid, ls1.FeatureID,ls1.labelid,
-         ls2.time   - ls1.time   as TimeDiff,
+         (julianday(ls2.time)-julianday(ls1.time)) as TimeDiff,
          ls2.Volume - ls1.Volume as VolDiff,
-         ls1.time, ls1.Mean,ls1.Volume ,
-         ls2.time, ls2.Mean,ls2.Volume    
+         ls1.time as TimeOne, ls1.Mean as MeanOne,ls1.Volume as VolumeOne,
+         ls2.time as TimeTwo, ls2.Mean as MeanTwo,ls2.Volume as VolumeTwo   
   from lstat ls1
   join lstat ls2 on ls1.Dataid=ls2.dataid and ls1.FeatureID=ls2.FeatureID and ls1.labelid=ls2.labelid
   where ls1.Time<ls2.Time and ls1.labelid > 0;
   """
 
-  #studyList = dict([(studyuid,time.strftime("%Y-%m-%d",time.strptime(unicode(studydate),"%Y%m%d"))) for (studyuid,studydate)  in tagsconn.execute( 'select StudyInstanceUID,StudyDate from Studies;')])
-  #print studyList
-  xxx= [ yyy for yyy  in tagsconn.execute( dataquery)]
-  print  xxx
+  # return query as list of dictionary
+  cursor.execute(dataquery)
+  queryNames= [description[0] for description in cursor.description]
+  queryList = [dict(zip(queryNames,x)) for x in cursor]
+  print queryNames #, queryDict
+
 
 #############################################################
 #############################################################
