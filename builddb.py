@@ -23,7 +23,18 @@ import ConfigParser
 ##
 ## TODO SQLite does not enforce the length of a VARCHAR. You can declare a VARCHAR(10) and SQLite will be happy to store a 500-million character string there. And it will keep all 500-million characters intact. Your content is never truncated. SQLite understands the column type of "VARCHAR(N)" to be the same as "TEXT", regardless of the value of N.
 initializedb = """
+DROP TABLE IF EXISTS 'outcome' ;
 DROP TABLE IF EXISTS 'lstat' ;
+
+CREATE TABLE 'outcome' (
+ 'DataID'             VARCHAR     NOT NULL,
+ 'TherapyStart'       DATE            NULL,
+ 'TherapyStop'        DATE            NULL,
+ 'BaselineImaging'    DATE            NULL,
+ 'FollowupImaging'    DATE            NULL,
+ 'Status'             INT         NOT NULL,
+ 'Comment'            VARCHAR         NULL,
+ PRIMARY KEY ('DataID') );
 
 CREATE TABLE 'lstat' (
  'DataID'     VARCHAR     NOT NULL,
@@ -57,8 +68,8 @@ parser.add_option( "--builddb",
 #############################################################
 if (options.initialize ):
   # build new database
-  os.system('rm ./DataSummary.sql')
-  tagsconn = sqlite3.connect('./DataSummary.sql')
+  os.system('rm ./DataSummary.sqlite')
+  tagsconn = sqlite3.connect('./DataSummary.sqlite')
   for sqlcmd in initializedb.split(";"):
      tagsconn.execute(sqlcmd )
 #############################################################
@@ -67,15 +78,28 @@ if (options.initialize ):
 #############################################################
 elif (options.builddb):
   import csv
-  tagsconn = sqlite3.connect('./DataSummary.sql')
-
   # initialize new database table
-  tagsconn = sqlite3.connect('./DataSummary.sql')
+  tagsconn = sqlite3.connect('./DataSummary.sqlite')
   for sqlcmd in initializedb.split(";"):
      tagsconn.execute(sqlcmd )
   cursor = tagsconn.cursor()
 
-  # necrosis/recurrence with path
+  # outcome data
+  # image processing results
+  with open('/rsrch1/ip/dtfuentes/FullRepo/DIP/data/mdacc/queries/mrnlists/melanomamarch2016.csv', 'r') as csvfile:
+      reader = csv.reader(csvfile, delimiter=',')
+      rawoutcomedata = [row for row in reader]
+  header = rawoutcomedata.pop(0)
+  print len(rawoutcomedata)
+  for row in rawoutcomedata:
+    DataID                 =     row[ header.index('MRN') ]
+    Status                 = int(row[ header.index('Status')    ])
+    defaultpatiententry    = (DataID,Status)
+    print defaultpatiententry
+    cursor.execute('insert into outcome (DataID,Status) values (?,?);' , defaultpatiententry);
+
+
+  # image processing results
   with open('./DataSummary.csv', 'r') as csvfile:
       reader = csv.reader(csvfile, delimiter=',')
       rawdatasummary = [row for row in reader]
@@ -110,18 +134,19 @@ elif (options.builddb):
   # organize distinct image features column wise
   featureselectstring = ""
   for featureid in featurenames:
-       featureselectstring = featureselectstring + "group_concat( CASE WHEN ls1.FeatureID='%s' THEN ls1.Mean END) as 'MeanOne%s', group_concat( CASE WHEN ls2.FeatureID='%s' THEN ls2.Mean END) as 'MeanTwo%s'," %(featureid ,featureid,featureid,featureid )
+       featureselectstring = featureselectstring + "group_concat( CASE WHEN ls1.FeatureID='%s' THEN ls1.Mean END) as 'TimeOne%s', group_concat( CASE WHEN ls2.FeatureID='%s' THEN ls2.Mean END) as 'TimeTwo%s'," %(featureid ,featureid,featureid,featureid )
 
   # query data
   dataquery ="""
   select ls1.Dataid, ls1.labelid,
          ls1.time as TimeOne,ls2.time as TimeTwo,  
-         (julianday(ls2.time)-julianday(ls1.time)) as TimeDiff,
+         (julianday(ls2.time)-julianday(ls1.time)) as TimeToEvent, oc.Status,
          %s
          ls1.Volume as VolumeOne, ls2.Volume as VolumeTwo,
          ls2.Volume - ls1.Volume as VolDiff
-  from lstat ls1
-  join lstat ls2 on ls1.Dataid=ls2.dataid and ls1.FeatureID=ls2.FeatureID and ls1.labelid=ls2.labelid
+  from lstat   ls1
+  join lstat   ls2 on ls1.Dataid=ls2.dataid and ls1.FeatureID=ls2.FeatureID and ls1.labelid=ls2.labelid
+  join outcome oc  on oc.Dataid=ls1.dataid 
   where ls1.Time<ls2.Time and ls1.labelid > 0
   group by ls1.Dataid,  ls1.labelid;
   """ % featureselectstring 
@@ -140,7 +165,7 @@ elif (options.builddb):
   queryList = [dict(zip(queryNames,x)) for x in cursor]
   print queryNames #, queryDict
 
-  os.system("sqlite3 DataSummary.sql < dataquery.sql > dataquery.csv")
+  os.system("sqlite3 DataSummary.sqlite < dataquery.sql > dataquery.csv")
 
 #############################################################
 #############################################################
