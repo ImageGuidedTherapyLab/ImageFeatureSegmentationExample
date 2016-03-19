@@ -35,7 +35,7 @@ CREATE TABLE 'lstat' (
  'Max'        REAL            NULL,
  'Min'        REAL            NULL,
  'Count'      INT             NULL,
- 'Vol.mm.3'   REAL            NULL,
+ 'Volume'     REAL            NULL,
  'ExtentX'    INT             NULL,
  'ExtentY'    INT             NULL,
  'ExtentZ'    INT             NULL,
@@ -98,10 +98,28 @@ elif (options.builddb):
     ExtentZ                = int(row[ header.index('ExtentZ')    ])
     defaultpatiententry    = (DataID,sqlformatimagedate,FeatureID,LabelID,MeanValue,StdDValue,MaxValue,MinValue,CountValue,VolumeValue,ExtentX,ExtentY,ExtentZ)
     print defaultpatiententry
-    cursor.execute('insert into lstat (DataID,Time,FeatureID,LabelID,Mean,StdD,Max,Min,Count,"Vol.mm.3",ExtentX,ExtentY,ExtentZ) values (?,?,?,?,?,?,?,?,?,?,?,?,?);' , defaultpatiententry);
+    cursor.execute('insert into lstat (DataID,Time,FeatureID,LabelID,Mean,StdD,Max,Min,Count,"Volume",ExtentX,ExtentY,ExtentZ) values (?,?,?,?,?,?,?,?,?,?,?,?,?);' , defaultpatiententry);
 
   # commit all updates
   tagsconn.commit()
+
+   
+  dataquery ="""
+  select ls1.Dataid, ls1.FeatureID,ls1.labelid,
+         ls2.time   - ls1.time   as TimeDiff,
+         ls2.Volume - ls1.Volume as VolDiff,
+         ls1.time, ls1.Mean,ls1.Volume ,
+         ls2.time, ls2.Mean,ls2.Volume    
+  from lstat ls1
+  join lstat ls2 on ls1.Dataid=ls2.dataid and ls1.FeatureID=ls2.FeatureID and ls1.labelid=ls2.labelid
+  where ls1.Time<ls2.Time and ls1.labelid > 0;
+  """
+
+  #studyList = dict([(studyuid,time.strftime("%Y-%m-%d",time.strptime(unicode(studydate),"%Y%m%d"))) for (studyuid,studydate)  in tagsconn.execute( 'select StudyInstanceUID,StudyDate from Studies;')])
+  #print studyList
+  xxx= [ yyy for yyy  in tagsconn.execute( dataquery)]
+  print  xxx
+
 #############################################################
 #############################################################
 else:
