@@ -103,17 +103,36 @@ elif (options.builddb):
   # commit all updates
   tagsconn.commit()
 
+  # get distinct image features
+  tmpfeaturenames= [ yyy for yyy  in tagsconn.execute("select group_concat(distinct featureid) from lstat;")]
+  featurenames= map(str,tmpfeaturenames[0][0].split(','))
+  
+  # organize distinct image features column wise
+  featureselectstring = ""
+  for featureid in featurenames:
+       featureselectstring = featureselectstring + "group_concat( CASE WHEN ls1.FeatureID='%s' THEN ls1.Mean END) as 'MeanOne%s', group_concat( CASE WHEN ls2.FeatureID='%s' THEN ls2.Mean END) as 'MeanTwo%s'," %(featureid ,featureid,featureid,featureid )
+
   # query data
   dataquery ="""
-  select ls1.Dataid, ls1.FeatureID,ls1.labelid,
+  select ls1.Dataid, ls1.labelid,
+         ls1.time as TimeOne,ls2.time as TimeTwo,  
          (julianday(ls2.time)-julianday(ls1.time)) as TimeDiff,
-         ls2.Volume - ls1.Volume as VolDiff,
-         ls1.time as TimeOne, ls1.Mean as MeanOne,ls1.Volume as VolumeOne,
-         ls2.time as TimeTwo, ls2.Mean as MeanTwo,ls2.Volume as VolumeTwo   
+         %s
+         ls1.Volume as VolumeOne, ls2.Volume as VolumeTwo,
+         ls2.Volume - ls1.Volume as VolDiff
   from lstat ls1
   join lstat ls2 on ls1.Dataid=ls2.dataid and ls1.FeatureID=ls2.FeatureID and ls1.labelid=ls2.labelid
-  where ls1.Time<ls2.Time and ls1.labelid > 0;
-  """
+  where ls1.Time<ls2.Time and ls1.labelid > 0
+  group by ls1.Dataid,  ls1.labelid;
+  """ % featureselectstring 
+
+  # save query
+  fileHandle = file('dataquery.sql'  ,'w')
+  fileHandle.write('.separator ","\n')
+  fileHandle.write('.header on  \n')
+  fileHandle.write(dataquery)
+  fileHandle.flush()
+  fileHandle.close()
 
   # return query as list of dictionary
   cursor.execute(dataquery)
@@ -121,6 +140,7 @@ elif (options.builddb):
   queryList = [dict(zip(queryNames,x)) for x in cursor]
   print queryNames #, queryDict
 
+  os.system("sqlite3 DataSummary.sql < dataquery.sql > dataquery.csv")
 
 #############################################################
 #############################################################
