@@ -129,3 +129,6 @@ $(WORKDIR)/%.lstat.csv:  $(DATADIR)/%.nii.gz
 	mkdir -p $(dir $(WORKDIR)/$*)
 	$(C3DEXE) $< $(dir $(DATADIR)/$*)/$(word 3,  $(subst /, ,$(DATADIR)/$*))_labels.nii.gz -lstat > $@.txt ; sed "s/^\s\+/$(firstword $(subst /, ,$(*D))),$(lastword $(subst /, ,$(*D))),$(*F),/g;s/\s\+/,/g;s/LabelID/ProjectID,DataID,FeatureID,LabelID/g;s/Vol(mm^3)/Vol.mm.3/g;s/Extent(Vox)/ExtentX,ExtentY,ExtentZ/g" $@.txt > $@
 
+
+statsummary.csv:
+	counter=0 ; for idfile in workdir/tcga_ov/*/*.lstat.csv ; do  if [[ "$$counter" -eq 0 ]] ;then cat $$idfile; else sed '1d' $$idfile; fi; counter=$$((counter+1)) ;done > $@
