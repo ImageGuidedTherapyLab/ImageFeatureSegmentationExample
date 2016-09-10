@@ -19,9 +19,10 @@ SUBDIRS := $(TESTCASES)
 SUBDIRS := $(filter-out $(TESTCASES),$(shell find ImageDatabase/ -mindepth 2 -links 2 -type d -print | cut -d'/' -f 2-) )
 # only look at directories with Truth.nii.gz
 SUBDIRS := $(filter-out $(TESTCASES),$(shell ls ImageDatabase/*/*/Truth.nii.gz | cut -d'/' -f 2-3) )
+SUBDIRS := $(filter-out $(TESTCASES),$(shell ls ImageDatabase/*/*/Mask.nii.gz | cut -d'/' -f 2-3) )
 
 # FIXME - hack manual job list
-include /rsrch1/ip/dtfuentes/FullRepo/DIP/data/mdacc/queries/mrnlists/joblistmelanoma
+#include /rsrch1/ip/dtfuentes/FullRepo/DIP/data/mdacc/queries/mrnlists/joblistmelanoma
 
 IMAGEDATA:= $(addsuffix /ImageData.Rdata,$(addprefix $(WORKDIR)/,$(SUBDIRS)))  
  
