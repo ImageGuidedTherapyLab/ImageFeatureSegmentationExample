@@ -3,7 +3,7 @@ SCRIPTSPATH=$(ROOTDIR)/Code
 ATROPOSCMD=$(ANTSPATH)/Atropos
 WORKDIR=workdir
 DATADIR=ImageDatabase
-C3DEXE=c3d
+C3D=c3d
 ANTSREGISTRATIONCMD=$(ANTSPATH)/antsRegistration
 ANTSAPPLYTRANSFORMSCMD=$(ANTSPATH)/antsApplyTransforms
 ANTSIMAGEMATHCMD=$(ANTSPATH)/ImageMath
@@ -108,11 +108,17 @@ FEATURES = RAWIMAGE                                    \
            SKEWNESS_RADIUS_3                           \
            SKEWNESS_RADIUS_5                                 
 
-stats: $(foreach idft,$(FEATURES),      $(addsuffix /Pre_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
-       $(foreach idft,$(FEATURES),      $(addsuffix /Art_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
-       $(foreach idft,$(FEATURES),      $(addsuffix /Ven_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
-       $(foreach idft,$(FEATURES),      $(addsuffix /Del_$(idft).lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
-       $(addsuffix /NORMALIZED_DISTANCE.lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+stats: $(foreach idft,$(FEATURES),      $(addsuffix /Pre_$(idft)/lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Art_$(idft)/lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Ven_$(idft)/lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Del_$(idft)/lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(addsuffix /NORMALIZED_DISTANCE/lstat.csv,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
+
+sql:   $(foreach idft,$(FEATURES),      $(addsuffix /Pre_$(idft).sql,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Art_$(idft).sql,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Ven_$(idft).sql,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(foreach idft,$(FEATURES),      $(addsuffix /Del_$(idft).sql,$(addprefix $(WORKDIR)/,$(SUBDIRS))) )\
+       $(addsuffix /NORMALIZED_DISTANCE.sql,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 
 csv: 
 	counter=0 ; for idfile in  $(WORKDIR)/*/*/*.lstat.csv ; do  if [[ $$counter -eq 0 ]] ;then cat $$idfile; else sed '1d' $$idfile; fi; counter=$$((counter+1)) ;done > DataSummary.csv
@@ -122,7 +128,6 @@ csv:
 # push to database
 $(WORKDIR)/%.sql: $(WORKDIR)/%/lstat.csv 
 	$(MYSQLIMPORT) --replace --fields-terminated-by=',' --lines-terminated-by='\n' --ignore-lines 1 Metadata $(WORKDIR)/$*/lstat.csv
-
 
 # make -f prediction.makefile   qa  > qa.txt 2>&1
 qa:
@@ -136,12 +141,11 @@ $(WORKDIR)/%/ViewProcessed.pdf: $(WORKDIR)/%/ImageData.Rdata
 # get image centroid for plotting
 $(WORKDIR)/%/Mask.nii.gz $(WORKDIR)/%/Mask.centroid.txt: 
 	mkdir -p $(WORKDIR)/$* 
-	if [[ -f $(DATADIR)/$*/Mask.nii.gz ]]; then echo "using Mask.nii.gz" ; cp $(DATADIR)/$*/Mask.nii.gz $(WORKDIR)/$*/Mask.nii.gz; elif [[ -f $(DATADIR)/$*/Truth.nii.gz ]]; then echo "using Truth.nii.gz" ; $(C3DEXE) $(DATADIR)/$*/Truth.nii.gz  -binarize  -o $(WORKDIR)/$*/Mask.nii.gz; else echo "NEED MASK" ;fi
+	if [[ -f $(DATADIR)/$*/Mask.nii.gz ]]; then echo "using Mask.nii.gz" ; cp $(DATADIR)/$*/Mask.nii.gz $(WORKDIR)/$*/Mask.nii.gz; elif [[ -f $(DATADIR)/$*/Truth.nii.gz ]]; then echo "using Truth.nii.gz" ; $(C3D) $(DATADIR)/$*/Truth.nii.gz  -binarize  -o $(WORKDIR)/$*/Mask.nii.gz; else echo "NEED MASK" ;fi
 	python Code/slicecentroid.py --imagedir=$(DATADIR)/$* > $(WORKDIR)/$*/Mask.centroid.txt
 	
 $(WORKDIR)/%/Truth.png: $(WORKDIR)/%/Mask.centroid.txt
-	-c3d $(DATADIR)/$*/Truth.nii.gz -slice z `cat $<` -dup -oli Code/dfltlabels.txt 1.0   -type uchar -omc $(WORKDIR)/$*/Truth.png
-
+	-$(C3D) $(DATADIR)/$*/Truth.nii.gz -slice z `cat $<` -dup -oli Code/dfltlabels.txt 1.0   -type uchar -omc $(WORKDIR)/$*/Truth.png
 
 # create csv file of image list
 $(WORKDIR)/%/FullImageList.csv: $(WORKDIR)/%/Mask.nii.gz 
@@ -152,7 +156,6 @@ $(WORKDIR)/%/FullImageList.csv: $(WORKDIR)/%/Mask.nii.gz
 $(WORKDIR)/%/ImageData.Rdata $(WORKDIR)/%/TopPredictors.csv: $(WORKDIR)/%/FullImageList.csv
 	Rscript Code/imageStatistics.R 3 $< $(@D)
 
-
 #run mixture model to segment the image
 #https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
 #https://www.gnu.org/software/make/manual/html_node/Secondary-Expansion.html#Secondary-Expansion
@@ -162,9 +165,9 @@ $(WORKDIR)/%/$(RFMODEL)/LABELS.RFGMM.nii.gz: $(WORKDIR)/$(RFMODEL) $(WORKDIR)/$$
 	$(ANTSIMAGEMATHCMD) 3 $@ MostLikely 0 $(WORKDIR)/$*/$(RFMODEL)/RF_POSTERIORS*.nii.gz
 
 #extract image statistics from label map
-$(WORKDIR)/%/lstat.csv: $(WORKDIR)/%.nii.gz $(SETUPDIR)/$$(*D)/roi.nii.gz
+$(WORKDIR)/%/lstat.csv: $(WORKDIR)/%.nii.gz $(DATADIR)/$$(*D)/Mask.nii.gz
 	mkdir -p $(WORKDIR)/$*
 	$(C3D) $< $(word 2,$^) -lstat > $(WORKDIR)/$*.txt
-	echo vglrun itksnap -g $< -s  $(word 2,$^) -o  $(dir $<)/max.nii.gz
-	sed "s/^\s\+/$(word 5,$(subst /, ,$*)),1087,$(lastword ,$(subst /, ,$*)),/g;s/\s\+/,/g;s/LabelID/SeriesInstanceUID,ProjectID,FeatureID,LabelID/g;s/Vol(mm^3)/Vol.mm.3/g;s/Extent(Vox)/ExtentX,ExtentY,ExtentZ/g" $(WORKDIR)/$*.txt > $(WORKDIR)/$*/lstat.csv
+	@echo vglrun itksnap -g $< -s  $(word 2,$^) 
+	sed "s/^\s\+/$(word 3,$(subst /, ,$*)),$(word 2,$(^F)),$(lastword ,$(subst /, ,$*)),/g;s/\s\+/,/g;s/LabelID/SeriesInstanceUID,SegmentationID,FeatureID,LabelID/g;s/Vol(mm^3)/Vol.mm.3/g;s/Extent(Vox)/ExtentX,ExtentY,ExtentZ/g" $(WORKDIR)/$*.txt > $(WORKDIR)/$*/lstat.csv
 
