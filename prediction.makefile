@@ -127,7 +127,7 @@ csv:
  
 # push to database
 $(WORKDIR)/%.sql: $(WORKDIR)/%/lstat.csv 
-	$(MYSQLIMPORT) --replace --fields-terminated-by=',' --lines-terminated-by='\n' --ignore-lines 1 Metadata $(WORKDIR)/$*/lstat.csv
+	$(MYSQLIMPORT) --replace --fields-terminated-by=',' --lines-terminated-by='\n' --ignore-lines 1 --columns=@x,SeriesInstanceUID,SegmentationID,FeatureID,LabelID,Mean,StdD,Max,Min,Count,Volume,ExtentX,ExtentY,ExtentZ Metadata $(WORKDIR)/$*/lstat.csv
 
 # make -f prediction.makefile   qa  > qa.txt 2>&1
 qa:
@@ -169,5 +169,7 @@ $(WORKDIR)/%/lstat.csv: $(WORKDIR)/%.nii.gz $(DATADIR)/$$(*D)/Mask.nii.gz
 	mkdir -p $(WORKDIR)/$*
 	$(C3D) $< $(word 2,$^) -lstat > $(WORKDIR)/$*.txt
 	@echo vglrun itksnap -g $< -s  $(word 2,$^) 
-	sed "s/^\s\+/$(word 3,$(subst /, ,$*)),$(word 2,$(^F)),$(lastword ,$(subst /, ,$*)),/g;s/\s\+/,/g;s/LabelID/SeriesInstanceUID,SegmentationID,FeatureID,LabelID/g;s/Vol(mm^3)/Vol.mm.3/g;s/Extent(Vox)/ExtentX,ExtentY,ExtentZ/g" $(WORKDIR)/$*.txt > $(WORKDIR)/$*/lstat.csv
+	sed "s/^\s\+/$(word 1,$(subst /, ,$*)),$(word 3,$(subst /, ,$*)),$(word 2,$(^F)),$(lastword ,$(subst /, ,$*)),/g;s/\s\+/,/g;s/LabelID/MRN,SeriesInstanceUID,SegmentationID,FeatureID,LabelID/g;s/Vol(mm^3)/Volume/g;s/Extent(Vox)/ExtentX,ExtentY,ExtentZ/g" $(WORKDIR)/$*.txt > $(WORKDIR)/$*/lstat.csv
+
+
 
