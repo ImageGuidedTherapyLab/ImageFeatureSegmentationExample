@@ -4,6 +4,12 @@
 
 * while [ 1 ] ; do make -f prediction.makefile -i -k -j 4 gmmfeature  stats png predictors ; make -f prediction.makefile -i -k summary.pdf ;sleep 5 ; done
 
+### Usage
+ make -f prediction.makefile -i -k -j 4 gmmfeature  
+ make -f prediction.makefile -k -i -j 8 stats
+ make -f prediction.makefile -k -i -j 8 csv
+ make -f prediction.makefile -k -i -j 8 sql
+
 An example image set from a single study needed as input to the random
 forest models is shown below.
 

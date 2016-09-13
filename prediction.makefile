@@ -121,7 +121,7 @@ sql:   $(foreach idft,$(FEATURES),      $(addsuffix /Pre_$(idft).sql,$(addprefix
        $(addsuffix /NORMALIZED_DISTANCE.sql,$(addprefix $(WORKDIR)/,$(SUBDIRS)))
 
 csv: 
-	counter=0 ; for idfile in  $(WORKDIR)/*/*/*.lstat.csv ; do  if [[ $$counter -eq 0 ]] ;then cat $$idfile; else sed '1d' $$idfile; fi; counter=$$((counter+1)) ;done > DataSummary.csv
+	counter=0 ; for idfile in  $(WORKDIR)/*/*/*/*/lstat.csv ; do  if [[ $$counter -eq 0 ]] ;then cat $$idfile; else sed '1d' $$idfile; fi; counter=$$((counter+1)) ;done > DataSummary.csv
 	mkdir -p DataSummary
 	$(foreach idim,$(CONTRAST),$(foreach idft,$(FEATURES), grep  "$(idim)_$(idft)"  DataSummary.csv   >  DataSummary/$(idim)_$(idft).csv;  ))
  
